@@ -1,0 +1,10 @@
+[90m= [39m[34;4mApp\Models\User[39;24m {#7410
+    [34mid[39m: [35m2[39m,
+    [34mname[39m: [32m"[39m[32mahmad[39m[32m"[39m,
+    [34memail[39m: [32m"[39m[32mahmad@ahmad.su[39m[32m"[39m,
+    [34mpassword[39m: [32m"[39m\$[32m2y[39m\$[32m12[39m\$[32mwqv8EHfnAm6AQXXWgY1qwefwvFRAhdPkhawzp5BWonJpjHBuTtPhO[39m[32m"[39m,
+    [34mstatus[39m: [35m0[39m,
+    [34mprofile_photo[39m: [36mnull[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-03-30 10:49:44[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-03-30 10:49:44[39m[32m"[39m,
+  }
