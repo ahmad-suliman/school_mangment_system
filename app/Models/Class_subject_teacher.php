@@ -14,12 +14,12 @@ class Class_subject_teacher extends Model
    ];
 
    public function classroom(){
-    $this->belongsTo(Classes::class,'class_id');
+        return $this->belongsTo(Classes::class,'class_id');
    }
    public function subject(){
-    $this->belongsTo(Subject::class,'subject_id');
+        return  $this->belongsTo(Subject::class,'subject_id');
    }
    public function teacher(){
-    $this->belongsTo(Teacher::class,'teacher_id');
+        return $this->belongsTo(Teacher::class,'teacher_id');
    }
 }

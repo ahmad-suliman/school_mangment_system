@@ -11,6 +11,13 @@ class Subject extends Model
         'subject_code',
     ];
     public function classSubjectTeachers(){
-        $this->hasMany(Class_subject_teacher::class,'subject_id');
+        return $this->hasMany(Class_subject_teacher::class,'subject_id');
+    }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'subject_id');
+    }
+    public function grades(){
+        return $this->hasMany(Grade::class);
     }
 }
