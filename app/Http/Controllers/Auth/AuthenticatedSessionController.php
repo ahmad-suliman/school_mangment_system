@@ -27,6 +27,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+         auth()->user()->update([
+        'status' => 1
+        ]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -36,6 +39,11 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        if (auth()->check()) {
+            auth()->user()->update([
+                'status' => 0
+            ]);
+        }
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

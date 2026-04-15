@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 
 class GradeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $grades = Grade::with(['student.user','subject','teacher.user'])
@@ -22,9 +20,6 @@ class GradeController extends Controller
             return view('Admin.Grade.index', compact('grades'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $students = Student::with('user')->get();
@@ -34,9 +29,7 @@ class GradeController extends Controller
         return view('Admin.Grade.create', compact('students', 'subjects', 'teachers'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -57,17 +50,7 @@ class GradeController extends Controller
             ->with('success', 'Grade added successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $grade = Grade::findOrFail($id);
@@ -75,9 +58,7 @@ class GradeController extends Controller
         return view('Admin.Grade.edit', compact('grade'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, string $id)
     {
         $request->validate([
@@ -93,9 +74,6 @@ class GradeController extends Controller
             ->with('success','Grade updated');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
       Grade::findOrFail($id)->delete();

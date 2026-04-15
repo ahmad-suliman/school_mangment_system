@@ -17,7 +17,7 @@
         </div>
         <div>
         <a href="{{route('dashboard')}}" class="btn btn-outline-secondary rounded-3">
-            <i class="fas fa-arrow-left me-1"></i> Back
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
         </a>
         <a href="{{ route('class-subject-teachers.create') }}" class="btn btn-primary rounded-3">
             <i class="fas fa-plus me-1"></i> New Assignment

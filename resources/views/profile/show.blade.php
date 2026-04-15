@@ -61,9 +61,9 @@
 
                     {{-- Status Badge --}}
                     <div class="mb-3">
-                        @if($user->status == 'active')
+                        @if($user->status == 1)
                             <span class="badge bg-success px-3 py-2">
-                                <i class="fas fa-circle-check me-1"></i> Active
+                                <i class="fas fa-circle-check me-1"></i> {Active}
                             </span>
                         @else
                             <span class="badge bg-danger px-3 py-2">

@@ -13,10 +13,15 @@
                 </h2>
                 <p class="text-muted mb-0">View, edit, and manage all Class in the system.</p>
             </div>
+            <div>
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Dashbard
+                </a>
+                <a href="{{ route('classes.create') }}" class="btn btn-primary">
+                    <i class="fa-solid fa-chalkboard"></i> Add New Class
+                </a>
+            </div>
 
-            <a href="{{ route('classes.create') }}" class="btn btn-primary">
-                <i class="fa-solid fa-chalkboard"></i> Add New Class
-            </a>
         </div>
 
 

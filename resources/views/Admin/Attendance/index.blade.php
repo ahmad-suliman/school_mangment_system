@@ -15,7 +15,7 @@
         </div>
         <div>
             <a href="{{route('dashboard')}}" class="btn btn-outline-secondary rounded-3">
-                <i class="fas fa-arrow-left me-1"></i> Back
+                <i class="fas fa-arrow-left me-1"></i> Dashboard
             </a>
             <a href="{{ route('attendance.create') }}" class="btn btn-primary shadow-sm">
                 <i class="fas fa-plus me-1"></i> Take Attendance

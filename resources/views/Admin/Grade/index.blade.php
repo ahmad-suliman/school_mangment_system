@@ -15,7 +15,7 @@
             </div>
             <div>
                 <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Back
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
                 <a href="{{ route('grades.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i> Add Grade
