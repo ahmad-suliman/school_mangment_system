@@ -14,10 +14,10 @@
                 <p class="text-muted mb-0">Manage and track student grades easily.</p>
             </div>
             <div>
-                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+                <a href="{{ auth()->user()->hasRole('admin')? route('admin.dashboard') : route('teacher.dashboard')}}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
-                <a href="{{ route('grades.create') }}" class="btn btn-primary">
+                <a href="{{ auth()->user()->hasRole('admin') ? route('admin.grades.create') : route('teacher.grades.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i> Add Grade
                 </a>
             </div>
@@ -72,7 +72,9 @@
                                     <th>Teacher</th>
                                     <th>Marks</th>
                                     <th>Status</th>
+                                    @role('admin')
                                     <th class="text-center">Actions</th>
+                                    @endrole
                                 </tr>
                             </thead>
 
@@ -147,6 +149,7 @@
                                         </td>
 
                                         {{-- ACTIONS --}}
+                                        @role('admin')
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
 
@@ -167,7 +170,7 @@
 
                                             </div>
                                         </td>
-
+                                        @endrole
                                     </tr>
                                 @endforeach
                             </tbody>

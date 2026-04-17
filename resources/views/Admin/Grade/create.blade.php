@@ -14,7 +14,7 @@
             <p class="text-muted mb-0">Assign marks to students easily.</p>
         </div>
 
-        <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ auth()->user()->hasRole('admin') ? route('admin.grades.index') : route('teacher.grades.index')}}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="card-body p-4">
-            <form action="{{ route('grades.store') }}" method="POST">
+            <form action="{{ route('teacher.grades.store') }}" method="POST">
                 @csrf
 
                 <div class="row g-4">
@@ -72,7 +72,7 @@
                             @endforeach
                         </select>
                     </div>
-
+                    @role('admin')
                     {{-- TEACHER --}}
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
@@ -87,7 +87,7 @@
                             @endforeach
                         </select>
                     </div>
-
+                    @endrole
                     {{-- MARKS --}}
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">
@@ -107,7 +107,7 @@
                 {{-- BUTTONS --}}
                 <div class="mt-4 d-flex justify-content-end gap-2">
 
-                    <a href="{{ route('grades.index') }}" class="btn btn-light border">
+                    <a href="{{ auth()->user()->hasRole('admin') ? route('admin.grades.index') : route('teacher.grades.index')}}" class="btn btn-light border">
                         Cancel
                     </a>
 

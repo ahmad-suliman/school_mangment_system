@@ -30,8 +30,14 @@ class AuthenticatedSessionController extends Controller
          auth()->user()->update([
         'status' => 1
         ]);
+        if(auth()->user()->hasRole('admin')){
+            return redirect()->route('admin.dashboard');
+        }
+        if(auth()->user()->hasRole('teacher')){
+            return redirect()->route('teacher.dashboard');
+        }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+
     }
 
     /**

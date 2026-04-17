@@ -23,9 +23,16 @@
                     </li>
                     <li class="nav-item ms-lg-3">
                         @auth
-                            <a href="{{ route('dashboard') }}" class="btn btn-light">
+                        @role('admin')
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
                                 <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
                             </a>
+                            @endrole
+                        @role('teacher')
+                             <a href="{{ route('teacher.dashboard') }}" class="btn btn-light">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                            </a>
+                        @endrole
                         @else
                             <a href="{{ route('login') }}" class="btn btn-light">
                                 <i class="fa-solid fa-right-to-bracket me-1"></i> Login
@@ -57,9 +64,16 @@
 
                     <div class="d-flex flex-wrap gap-2">
                         @auth
-                            <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg">
-                                <i class="fa-solid fa-gauge-high me-2"></i>Go to Dashboard
+                        @role('admin')
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
                             </a>
+                            @endrole
+                        @role('teacher')
+                             <a href="{{ route('teacher.dashboard') }}" class="btn btn-light">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                            </a>
+                        @endrole
                         @else
                             <a href="{{ route('login') }}" class="btn btn-light btn-lg">
                                 <i class="fa-solid fa-right-to-bracket me-2"></i>Login
@@ -322,9 +336,16 @@
             <p class="lead mb-4">Login to access your school dashboard and manage everything efficiently.</p>
 
             @auth
-                <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg">
-                    <i class="fa-solid fa-gauge-high me-2"></i>Go to Dashboard
-                </a>
+                        @role('admin')
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-light">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                            </a>
+                            @endrole
+                        @role('teacher')
+                             <a href="{{ route('teacher.dashboard') }}" class="btn btn-light">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                            </a>
+                        @endrole
             @else
                 <a href="{{ route('login') }}" class="btn btn-light btn-lg">
                     <i class="fa-solid fa-right-to-bracket me-2"></i>Login Now

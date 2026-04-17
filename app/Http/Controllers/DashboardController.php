@@ -46,4 +46,22 @@ class DashboardController extends Controller
         'assignments'
     ));
    }
+   public function teacherDashboard()
+    {
+        $teacher = auth()->user()->teacher;
+
+        $assignments = \App\Models\Class_subject_teacher::where('teacher_id', $teacher->id)
+            ->with(['classroom', 'subject'])
+            ->get();
+
+        return view('Teacher.dashboard', [
+            'classes' => $assignments,
+            'subjects' => $assignments,
+            'totalClasses' => $assignments->pluck('class_id')->unique()->count(),
+            'totalSubjects' => $assignments->pluck('subject_id')->unique()->count(),
+            'totalStudents' => \App\Models\Student::whereIn('class_id', $assignments->pluck('class_id'))->count(),
+            'todayAttendance' => \App\Models\Attendance::where('teacher_id', $teacher->id)
+                                    ->whereDate('date', today())->count(),
+        ]);
+    }
 }

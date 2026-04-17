@@ -13,23 +13,37 @@ use Illuminate\Http\Request;
 class AttendanceController extends Controller
 {
 
-    public function index() {
-        $attendances = Attendance::with([
-            'student.user',
-            'classroom',
-            'subject',
-            'teacher.user'
-        ])->latest()->paginate(10);
+    public function index()
+    {
+        if (auth()->user()->hasRole('teacher')) {
+            $teacher_id = auth()->user()->teacher->id;
+
+            $attendances = Attendance::with(['student.user', 'classroom', 'subject'])
+                ->where('teacher_id', $teacher_id)
+                ->latest()
+                ->paginate(10);
+        } else {
+            $attendances = Attendance::with(['student.user', 'classroom', 'subject', 'teacher.user'])
+                ->latest()
+                ->paginate(10);
+        }
 
         return view('Admin.Attendance.index', compact('attendances'));
     }
-    public function create() {
+    public function create()
+    {
         $classes = Classes::all();
-        $teachers = Teacher::all();
-        return view('Admin.Attendance.create', compact('classes','teachers'));
+
+        if (auth()->user()->hasRole('admin')) {
+            $teachers = Teacher::all();
+            return view('Admin.Attendance.create', compact('classes', 'teachers'));
+        }
+
+        return view('Admin.Attendance.create', compact('classes'));
     }
 
-    public function loadStudents(Request $request) {
+    public function loadStudents(Request $request)
+    {
         $request->validate([
             'class_id' => 'required|exists:classes,id',
             'date' => 'required|date',
@@ -41,16 +55,20 @@ class AttendanceController extends Controller
             ->where('class_id', $request->class_id)
             ->get();
 
-
+        // ✅ TEACHER
         if (auth()->user()->hasRole('teacher')) {
 
-            $teacher_id = auth()->user()->teacher->id;
+            $teacher = auth()->user()->teacher;
 
-        $subjects = Class_subject_teacher::with('subject')
-        ->where('teacher_id', $teacher_id)
-        ->where('class_id', $request->class_id)
-        ->get()
-        ->pluck('subject');
+            if (!$teacher) {
+                abort(403, 'Teacher not found');
+            }
+
+            $subjects = Class_subject_teacher::where('teacher_id', $teacher->id)
+                ->where('class_id', $request->class_id)
+                ->with('subject')
+                ->get()
+                ->pluck('subject');
 
             return view('Admin.Attendance.create', [
                 'classes' => $classes,
@@ -61,22 +79,19 @@ class AttendanceController extends Controller
             ]);
         }
 
-
-        $subjects = Subject::all();
-        $teachers = Teacher::with('user')->get();
-
+        // ✅ ADMIN
         return view('Admin.Attendance.create', [
             'classes' => $classes,
             'students' => $students,
-            'subjects' => $subjects,
-            'teachers' => $teachers,
+            'subjects' => Subject::all(),
+            'teachers' => Teacher::with('user')->get(),
             'class_id' => $request->class_id,
             'date' => $request->date,
-
         ]);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'class_id' => 'required|exists:classes,id',
             'subject_id' => 'required|exists:subjects,id',
@@ -93,7 +108,6 @@ class AttendanceController extends Controller
             }
 
             $teacher_id = $teacher->id;
-
         } else {
             $request->validate([
                 'teacher_id' => 'required|exists:teachers,id',
@@ -120,8 +134,14 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($exists) {
-            return redirect()->route('attendance.create')->withInput()
+            if(auth()->user()->hasRole('admin')){
+                return redirect()->route('admin.attendance.create')->withInput()
                 ->with('danger', 'Attendance already taken for this subject today.');
+            }else{
+                return redirect()->route('teacher.attendance.create')->withInput()
+                ->with('danger', 'Attendance already taken for this subject today.');
+            }
+
         }
 
 
@@ -136,18 +156,24 @@ class AttendanceController extends Controller
                 'status' => $status,
             ]);
         }
-
-        return redirect()->route('attendance.create')
+        if(auth()->user()->hasRole('admin')){
+        return redirect()->route('admin.attendance.index')
             ->with('success', 'Attendance saved successfully');
+        }else{
+            return redirect()->route('teacher.attendance.index')
+            ->with('success', 'Attendance saved successfully');
+        }
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $attendance = Attendance::with('student.user')->findOrFail($id);
 
         return view('Admin.Attendance.edit', compact('attendance'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'status' => 'required|in:present,absent,late',
         ]);
@@ -162,7 +188,8 @@ class AttendanceController extends Controller
             ->with('success', 'Attendance updated successfully');
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         $attendance = Attendance::findOrFail($id);
         $attendance->delete();
 

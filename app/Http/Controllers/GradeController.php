@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Class_subject_teacher;
+use App\Models\Classes;
 use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Subject;
@@ -13,20 +15,47 @@ class GradeController extends Controller
 
     public function index()
     {
-        $grades = Grade::with(['student.user','subject','teacher.user'])
+        if (auth()->user()->hasRole('teacher')) {
+
+            $teacher_id = auth()->user()->teacher->id;
+
+            $grades = Grade::with(['student.user', 'subject'])
+                ->where('teacher_id', $teacher_id)
                 ->latest()
                 ->paginate(10);
+        } else {
 
-            return view('Admin.Grade.index', compact('grades'));
+            $grades = Grade::with(['student.user', 'subject', 'teacher.user'])
+                ->latest()
+                ->paginate(10);
+        }
+
+        return view('Admin.Grade.index', compact('grades'));
     }
 
     public function create()
     {
+        $classes = Classes::all();
         $students = Student::with('user')->get();
+
+        // teacher
+        if (auth()->user()->hasRole('teacher')) {
+
+            $teacher = auth()->user()->teacher;
+
+            $subjects = Class_subject_teacher::where('teacher_id', $teacher->id)
+                ->with('subject')
+                ->get()
+                ->pluck('subject');
+
+            return view('Admin.Grade.create', compact('classes', 'subjects','students'));
+        }
+
+        // admin
         $subjects = Subject::all();
         $teachers = Teacher::with('user')->get();
 
-        return view('Admin.Grade.create', compact('students', 'subjects', 'teachers'));
+        return view('Admin.Grades.create', compact('classes', 'subjects', 'teachers','students'));
     }
 
 
@@ -35,19 +64,54 @@ class GradeController extends Controller
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'subject_id' => 'required|exists:subjects,id',
-            'teacher_id' => 'required|exists:teachers,id',
             'marks' => 'required|numeric|min:0|max:100',
         ]);
 
-        Grade::create($request->only([
-            'student_id',
-            'subject_id',
-            'teacher_id',
-            'marks'
-        ]));
+        // ================= GET TEACHER =================
+        if (auth()->user()->hasRole('teacher')) {
 
-        return redirect()->back()
-            ->with('success', 'Grade added successfully');
+            $teacher = auth()->user()->teacher;
+
+            if (!$teacher) {
+                return back()->with('danger', 'Teacher not found');
+            }
+
+            $teacher_id = $teacher->id;
+
+            // 🔥 SECURITY: teacher can only add his subject
+            $allowed = Class_subject_teacher::where([
+                'teacher_id' => $teacher_id,
+                'subject_id' => $request->subject_id
+            ])->exists();
+
+            if (!$allowed) {
+                return back()->with('danger', 'You are not allowed for this subject');
+            }
+        } else {
+
+            // admin must choose teacher
+            $request->validate([
+                'teacher_id' => 'required|exists:teachers,id'
+            ]);
+
+            $teacher_id = $request->teacher_id;
+        }
+
+        // ================= SAVE =================
+        Grade::create([
+            'student_id' => $request->student_id,
+            'subject_id' => $request->subject_id,
+            'teacher_id' => $teacher_id,
+            'marks' => $request->marks,
+        ]);
+        if(auth()->user()->hasRole('admin')){
+             return redirect()->route('admin.grades.index')
+                ->with('success', 'Grade added successfully');
+        }else{
+                return redirect()->route('teacher.grades.index')
+                ->with('success', 'Grade added successfully');
+        }
+
     }
 
 
@@ -69,15 +133,20 @@ class GradeController extends Controller
         $grade->update([
             'marks' => $request->marks
         ]);
+        if(auth()->user()->hasRole('admin')){
+             return redirect()->route('admin.grades.index')
+                ->with('success', 'Grade updated');
+        }else{
+                return redirect()->route('teacher.grades.index')
+                ->with('success', 'Grade updated');
+        }
 
-        return redirect()->route('grades.index')
-            ->with('success','Grade updated');
     }
 
     public function destroy(string $id)
     {
-      Grade::findOrFail($id)->delete();
+        Grade::findOrFail($id)->delete();
 
-        return back()->with('success','Deleted successfully');
+        return back()->with('success', 'Deleted successfully');
     }
 }
