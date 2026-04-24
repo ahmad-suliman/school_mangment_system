@@ -14,10 +14,10 @@
             </div>
 
             <div class="d-flex gap-2">
-                <a href="{{ route('teachers.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Back
                 </a>
-                <a href="{{ route('teachers.edit', $teacher) }}" class="btn btn-primary">
+                <a href="{{ route('admin.teachers.edit', $teacher) }}" class="btn btn-primary">
                     <i class="fas fa-pen-to-square me-1"></i> Edit
                 </a>
             </div>
@@ -75,11 +75,11 @@
 
                         {{-- Action Buttons --}}
                         <div class="d-grid gap-2 mt-4">
-                            <a href="{{ route('teachers.edit', $teacher) }}" class="btn btn-primary rounded-3">
+                            <a href="{{ route('admin.teachers.edit', $teacher) }}" class="btn btn-primary rounded-3">
                                 <i class="fas fa-pen-to-square me-1"></i> Edit Teacher
                             </a>
 
-                            <form action="{{ route('teachers.destroy', $teacher) }}" method="POST"
+                            <form action="{{ route('admin.teachers.destroy', $teacher) }}" method="POST"
                                 onsubmit="return confirm('Are you sure you want to delete this teacher?')">
                                 @csrf
                                 @method('DELETE')

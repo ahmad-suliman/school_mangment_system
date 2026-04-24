@@ -38,7 +38,7 @@
         </div>
 
         <div class="card-body p-4">
-            <form action="{{ route('teacher.grades.store') }}" method="POST">
+            <form action="{{ auth()->user()->hasRole('admin')?route('admin.grades.store') : route('teacher.grades.store')}}" method="POST">
                 @csrf
 
                 <div class="row g-4">

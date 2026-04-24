@@ -12,11 +12,9 @@
                 <p class="text-muted mb-0">Edit a teacher account and profile information.</p>
             </div>
             <div>
-           <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back
-            </a>
-             <a href="{{ route('teachers.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-back me-1"></i> Teachers
+
+             <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">
+                 <i class="fas fa-arrow-left me-1"></i>  Teachers
             </a>
             </div>
 
@@ -50,7 +48,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('teachers.update',$teacher->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.teachers.update',$teacher->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="u_id" value="{{$teacher->user_id}}">

@@ -16,7 +16,7 @@
                 </p>
             </div>
 
-            <a href="{{ route('class-subject-teachers.index') }}" class="btn btn-outline-secondary rounded-3">
+            <a href="{{ route('admin.class-subject-teachers.index') }}" class="btn btn-outline-secondary rounded-3">
                 <i class="fas fa-arrow-left me-1"></i> Back
             </a>
         </div>
@@ -64,7 +64,7 @@
                         @endif
 
                         {{-- Form --}}
-                        <form action="{{route('class-subject-teachers.store')}}" method="POST">
+                        <form action="{{route('admin.class-subject-teachers.store')}}" method="POST">
                             @csrf
 
                             <div class="row g-4">

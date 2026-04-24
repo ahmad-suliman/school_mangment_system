@@ -9,7 +9,7 @@
         Edit Attendance
     </h3>
 
-    <form action="{{ route('attendance.update', $attendance->id) }}" method="POST">
+    <form action="{{ route('admin.attendance.update', $attendance->id) }}" method="POST">
         @csrf
         @method('PUT')
 

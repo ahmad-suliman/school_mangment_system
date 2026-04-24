@@ -11,8 +11,8 @@
                 </h2>
                 <p class="text-muted mb-0">Create a teacher account and profile information.</p>
             </div>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back
+            <a href="{{ route('admin.teachers.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Teachers
             </a>
         </div>
         @if (session('success'))
@@ -44,7 +44,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('teachers.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.teachers.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-4">
                         <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">

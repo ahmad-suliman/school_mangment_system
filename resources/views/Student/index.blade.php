@@ -15,7 +15,7 @@
             <p class="text-muted mb-0">View, manage, and organize all students in the system.</p>
         </div>
         <div>
-            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+            <a href="{{ auth()->user()->hasRole('admin') ?route('admin.dashboard') : route('teacher.dashboard')}}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Dashboard
             </a>
         <a href="{{ route('students.create') }}" class="btn btn-primary rounded-3 px-4">

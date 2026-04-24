@@ -14,10 +14,10 @@
             <p class="text-muted mb-0">View, edit, and manage all teachers in the system.</p>
         </div>
         <div>
-             <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">
+             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Dashboard
             </a>
-            <a href="{{ route('teachers.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary">
                 <i class="fas fa-user-plus me-2"></i> Add New Teacher
             </a>
         </div>
@@ -154,20 +154,20 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
 
-                                            <a href="{{route('teachers.show',$teacher->id)}}"
+                                            <a href="{{route('admin.teachers.show',$teacher->id)}}"
                                                class="btn btn-sm btn-info text-light rounded-3"
                                                title="View Teacher">
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{route('teachers.edit',$teacher->id)}}"
+                                            <a href="{{route('admin.teachers.edit',$teacher->id)}}"
                                                class="btn btn-sm btn-warning text-dark rounded-3"
                                                title="Edit Teacher">
                                                 <i class="fas fa-pen-to-square"></i>
                                             </a>
 
 
-                                            <form action="{{route('teachers.destroy',$teacher->user_id)}}"
+                                            <form action="{{route('admin.teachers.destroy',$teacher->user_id)}}"
                                                   method="POST"
                                                   onsubmit="return confirm('Are you sure you want to delete this teacher?');"
                                                   class="d-inline">
@@ -204,7 +204,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">No Teachers Found</h5>
                     <p class="text-muted mb-4">There are no teachers added yet. Start by creating a new teacher.</p>
-                    <a href="{{ route('teachers.create') }}" class="btn btn-primary">
+                    <a href="{{ route('admin.teachers.create') }}" class="btn btn-primary">
                         <i class="fas fa-user-plus me-2"></i> Add First Teacher
                     </a>
                 </div>

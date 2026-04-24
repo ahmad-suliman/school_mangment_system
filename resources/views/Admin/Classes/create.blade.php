@@ -13,7 +13,7 @@
             </div>
             <div>
 
-            <a href="{{ route('classes.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('admin.classes.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Back
             </a>
             </div>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('classes.store') }}" method="POST">
+                <form action="{{ route('admin.classes.store') }}" method="POST">
                     @csrf
                     <div class="mb-4">
                         <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">

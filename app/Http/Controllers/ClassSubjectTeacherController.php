@@ -57,7 +57,7 @@ class ClassSubjectTeacherController extends Controller
             'academic_year' => $valideted['academic_year'],
         ]);
 
-        return redirect()->route('class-subject-teachers.index')->with('success','subject assign successfuly!');
+        return redirect()->route('admin.class-subject-teachers.index')->with('success','subject assign successfuly!');
     }
 
 
@@ -94,7 +94,7 @@ class ClassSubjectTeacherController extends Controller
             'teacher_id'=>$valideted['teacher_id'],
             'academic_year'=>$valideted['academic_year'],
         ]);
-        return redirect()->route('class-subject-teachers.index')->with('success','Assignment Edited Successfuly!');
+        return redirect()->route('admin.class-subject-teachers.index')->with('success','Assignment Edited Successfuly!');
     }
 
     /**

@@ -153,12 +153,12 @@
                                         <td class="text-center">
                                             <div class="d-flex justify-content-center gap-2">
 
-                                                <a href="{{ route('grades.edit', $grade->id) }}"
+                                                <a href="{{ route('admin.grades.edit', $grade->id) }}"
                                                     class="btn btn-sm btn-warning">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
 
-                                                <form action="{{ route('grades.destroy', $grade->id) }}" method="POST"
+                                                <form action="{{ route('admin.grades.destroy', $grade->id) }}" method="POST"
                                                     onsubmit="return confirm('Delete this grade?')">
                                                     @csrf
                                                     @method('DELETE')

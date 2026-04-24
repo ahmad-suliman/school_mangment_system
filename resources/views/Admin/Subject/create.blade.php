@@ -14,8 +14,8 @@
             <p class="text-muted mb-0">Create a new subject for your school management system.</p>
         </div>
 
-        <a href="#" class="btn btn-outline-secondary rounded-3">
-            <i class="fas fa-arrow-left me-1"></i> Back
+        <a href="{{route('admin.subjects.index')}}" class="btn btn-outline-secondary rounded-3">
+            <i class="fas fa-arrow-left me-1"></i> Subjects
         </a>
     </div>
        @if (session('success'))
@@ -52,7 +52,7 @@
                         </div>
                     @endif
 
-                    <form action="{{route('subjects.store')}}" method="POST">
+                    <form action="{{route('admin.subjects.store')}}" method="POST">
                         @csrf
 
                         <div class="row g-3">
@@ -94,7 +94,7 @@
 
                         {{-- Buttons --}}
                         <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="#" class="btn btn-light border rounded-3">
+                            <a href="{{route('admin.subjects.index')}}" class="btn btn-light border rounded-3">
                                 <i class="fas fa-times me-1"></i> Cancel
                             </a>
 

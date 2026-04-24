@@ -12,8 +12,16 @@ class SubjectController extends Controller
      */
     public function index()
     {
-        $subjects = Subject::latest()->paginate(10);
-        return view('Admin.Subject.index',compact('subjects'));
+        if (auth()->user()->hasRole('student')) {
+
+            $student = auth()->user()->student;
+
+            $subjects = $student->classroom->subjects ?? collect();
+        } else {
+            $subjects = Subject::all();
+        }
+
+        return view('Admin.Subject.index', compact('subjects'));
     }
 
     /**
@@ -34,19 +42,12 @@ class SubjectController extends Controller
             'subject_code' => 'required|string|max:4|unique:subjects,subject_code',
         ]);
         Subject::create([
-            'subject_name'=>$validated['subject_name'],
-            'subject_code'=>strtoupper($validated['subject_code']),
+            'subject_name' => $validated['subject_name'],
+            'subject_code' => strtoupper($validated['subject_code']),
         ]);
-        return redirect()->back()->with('success','Subject Added Successfuly!');
+        return redirect()->route('admin.subjects.index')->with('success', 'Subject Added Successfuly!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -54,13 +55,13 @@ class SubjectController extends Controller
     public function edit(string $id)
     {
         $subject = Subject::findorfail($id);
-        return view('Admin.Subject.edit',compact('subject'));
+        return view('Admin.Subject.edit', compact('subject'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,Subject $subject)
+    public function update(Request $request, Subject $subject)
     {
         $request->validate([
             'subject_name' => 'required|string|max:255',
@@ -81,6 +82,6 @@ class SubjectController extends Controller
     public function destroy(string $id)
     {
         $subject = Subject::findorfail($id)->delete();
-        return back()->with('danger','Subject Deletet!');
+        return back()->with('danger', 'Subject Deletet!');
     }
 }

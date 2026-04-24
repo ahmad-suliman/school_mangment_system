@@ -14,10 +14,10 @@
             <p class="text-muted mb-0">View, manage, and organize all school subjects.</p>
         </div>
         <div>
-              <a href="{{route('dashboard')}}" class="btn btn-outline-secondary rounded-3">
+              <a href="{{route('admin.dashboard')}}" class="btn btn-outline-secondary rounded-3">
             <i class="fas fa-arrow-left me-1"></i> Dashboard
         </a>
-        <a href="{{ route('subjects.create') }}" class="btn btn-primary rounded-3">
+        <a href="{{ route('admin.subjects.create') }}" class="btn btn-primary rounded-3">
             <i class="fas fa-plus me-1"></i> Add New Subject
         </a>
         </div>
@@ -49,7 +49,7 @@
                     <i class="fas fa-book me-2 text-primary"></i> Subject List
                 </h5>
 
-                {{-- Search UI فقط شكل حاليا --}}
+
                 <div class="w-100" style="max-width: 320px;">
                     <div class="input-group">
                         <span class="input-group-text bg-light border-0">
@@ -111,22 +111,15 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
 
-                                            {{-- Show --}}
-                                            <a href="#"
-                                               class="btn btn-sm btn-info text-white rounded-3"
-                                               title="View Subject">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-
                                             {{-- Edit --}}
-                                            <a href="{{route('subjects.edit',$subject->id)}}"
+                                            <a href="{{route('admin.subjects.edit',$subject->id)}}"
                                                class="btn btn-sm btn-warning text-dark rounded-3"
                                                title="Edit Subject">
                                                 <i class="fas fa-pen-to-square"></i>
                                             </a>
 
                                             {{-- Delete --}}
-                                            <form action="{{route('subjects.destroy',$subject->id)}}"
+                                            <form action="{{route('admin.subjects.destroy',$subject->id)}}"
                                                   method="POST"
                                                   onsubmit="return confirm('Are you sure you want to delete this subject?');"
                                                   class="d-inline">
@@ -167,7 +160,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">No Subjects Found</h5>
                     <p class="text-muted mb-4">There are no subjects added yet. Start by creating a new subject.</p>
-                    <a href="{{ route('subjects.create') }}" class="btn btn-primary rounded-3">
+                    <a href="{{ route('admin.subjects.create') }}" class="btn btn-primary rounded-3">
                         <i class="fas fa-plus me-2"></i> Add First Subject
                     </a>
                 </div>

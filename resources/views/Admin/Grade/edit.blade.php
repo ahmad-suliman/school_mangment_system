@@ -14,7 +14,7 @@
             <p class="text-muted mb-0">Update student marks.</p>
         </div>
 
-        <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">
+        <a href="{{ route('admin.grades.index') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
     </div>
@@ -40,7 +40,7 @@
 
         <div class="card-body p-4">
 
-            <form action="{{ route('grades.update', $grade->id) }}" method="POST">
+            <form action="{{ route('admin.grades.update', $grade->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -103,7 +103,7 @@
                 {{-- ACTION BUTTONS --}}
                 <div class="mt-4 d-flex justify-content-end gap-2">
 
-                    <a href="{{ route('grades.index') }}" class="btn btn-light border">
+                    <a href="{{ route('admin.grades.index') }}" class="btn btn-light border">
                         Cancel
                     </a>
 

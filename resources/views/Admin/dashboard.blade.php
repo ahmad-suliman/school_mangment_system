@@ -29,27 +29,27 @@
                     <i class="fa fa-user-graduate me-2"></i> Students
                 </a></li>
 
-                <li><a href="{{route('teachers.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.teachers.index')}}" class="nav-link text-white">
                     <i class="fa fa-chalkboard-user me-2"></i> Teachers
                 </a></li>
 
-                <li><a href="{{route('classes.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.classes.index')}}" class="nav-link text-white">
                     <i class="fa fa-door-open me-2"></i> Classes
                 </a></li>
 
-                <li><a href="{{route('subjects.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.subjects.index')}}" class="nav-link text-white">
                     <i class="fa fa-book me-2"></i> Subjects
                 </a></li>
 
-                <li><a href="{{route('class-subject-teachers.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.class-subject-teachers.index')}}" class="nav-link text-white">
                     <i class="fa fa-diagram-project me-2"></i> Assign Subjects
                 </a></li>
 
-                <li><a href="{{route('attendance.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.attendance.index')}}" class="nav-link text-white">
                     <i class="fa fa-calendar-check me-2"></i> Attendance
                 </a></li>
 
-                <li><a href="{{route('grades.index')}}" class="nav-link text-white">
+                <li><a href="{{route('admin.grades.index')}}" class="nav-link text-white">
                     <i class="fa fa-chart-column me-2"></i> Grades
                 </a></li>
 
@@ -159,19 +159,19 @@
                         Add Student
                     </a>
 
-                    <a href="{{route('teachers.create')}}" class="btn btn-success">
+                    <a href="{{route('admin.teachers.create')}}" class="btn btn-success">
                         Add Teacher
                     </a>
 
-                    <a href="{{route('class-subject-teachers.create')}}" class="btn btn-warning text-white">
+                    <a href="{{route('admin.class-subject-teachers.create')}}" class="btn btn-warning text-white">
                         Assign Subject
                     </a>
 
-                    <a href="{{route('attendance.create')}}" class="btn btn-info text-white">
+                    <a href="{{route('admin.attendance.index')}}" class="btn btn-info text-white">
                         Take Attendance
                     </a>
 
-                    <a href="{{route('grades.create')}}" class="btn btn-dark">
+                    <a href="{{route('admin.grades.create')}}" class="btn btn-dark">
                         Add Grade
                     </a>
 

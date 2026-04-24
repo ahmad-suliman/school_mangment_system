@@ -15,17 +15,27 @@ class AttendanceController extends Controller
 
     public function index()
     {
-        if (auth()->user()->hasRole('teacher')) {
-            $teacher_id = auth()->user()->teacher->id;
+        if (auth()->user()->hasRole('student')) {
 
-            $attendances = Attendance::with(['student.user', 'classroom', 'subject'])
-                ->where('teacher_id', $teacher_id)
+            $student = auth()->user()->student;
+
+            $attendances = Attendance::with('subject')
+                ->where('student_id', $student->id)
                 ->latest()
-                ->paginate(10);
+                ->get();
+        } elseif (auth()->user()->hasRole('teacher')) {
+
+            $teacher = auth()->user()->teacher;
+
+            $attendances = Attendance::with('student.user', 'subject')
+                ->where('teacher_id', $teacher->id)
+                ->latest()
+                ->get();
         } else {
-            $attendances = Attendance::with(['student.user', 'classroom', 'subject', 'teacher.user'])
+            // admin
+            $attendances = Attendance::with('student.user', 'teacher.user', 'subject')
                 ->latest()
-                ->paginate(10);
+                ->get();
         }
 
         return view('Admin.Attendance.index', compact('attendances'));
@@ -134,14 +144,13 @@ class AttendanceController extends Controller
             ->exists();
 
         if ($exists) {
-            if(auth()->user()->hasRole('admin')){
+            if (auth()->user()->hasRole('admin')) {
                 return redirect()->route('admin.attendance.create')->withInput()
-                ->with('danger', 'Attendance already taken for this subject today.');
-            }else{
+                    ->with('danger', 'Attendance already taken for this subject today.');
+            } else {
                 return redirect()->route('teacher.attendance.create')->withInput()
-                ->with('danger', 'Attendance already taken for this subject today.');
+                    ->with('danger', 'Attendance already taken for this subject today.');
             }
-
         }
 
 
@@ -156,12 +165,12 @@ class AttendanceController extends Controller
                 'status' => $status,
             ]);
         }
-        if(auth()->user()->hasRole('admin')){
-        return redirect()->route('admin.attendance.index')
-            ->with('success', 'Attendance saved successfully');
-        }else{
+        if (auth()->user()->hasRole('admin')) {
+            return redirect()->route('admin.attendance.index')
+                ->with('success', 'Attendance saved successfully');
+        } else {
             return redirect()->route('teacher.attendance.index')
-            ->with('success', 'Attendance saved successfully');
+                ->with('success', 'Attendance saved successfully');
         }
     }
 
@@ -184,15 +193,24 @@ class AttendanceController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('attendance.index')
-            ->with('success', 'Attendance updated successfully');
+        if (auth()->user()->hasRole('admin')) {
+            return redirect()->route('admin.attendance.index')
+                ->with('success', 'Attendance updated successfully');
+        } else {
+            return redirect()->route('teacher.attendance.index')
+                ->with('success', 'Attendance updated successfully');
+        }
     }
 
     public function destroy($id)
     {
-        $attendance = Attendance::findOrFail($id);
-        $attendance->delete();
+        if (auth()->user()->hasRole('admin')) {
+            $attendance = Attendance::findOrFail($id);
+            $attendance->delete();
 
-        return back()->with('success', 'Attendance deleted successfully');
+            return back()->with('success', 'Attendance deleted successfully');
+        } else {
+            abort(403);
+        }
     }
 }

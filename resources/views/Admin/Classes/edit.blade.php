@@ -11,8 +11,8 @@
                 </h2>
                 <p class="text-muted mb-0">Edit a Class Grade and Section.</p>
             </div>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Back
+            <a href="{{ route('admin.classes.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Classes
             </a>
         </div>
         @if (session('success'))
@@ -44,7 +44,7 @@
             </div>
 
             <div class="card-body p-4">
-                <form action="{{ route('classes.update',$classes->id) }}" method="POST">
+                <form action="{{ route('admin.classes.update',$classes->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="mb-4">

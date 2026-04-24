@@ -56,7 +56,7 @@ class TeacherController extends Controller
             'hire_date' => $validated['hire_date'] ,
             'address' => $validated['address'] ,
         ]);
-          return redirect()->route('teachers.index')->with('success', 'Teacher added successfully.');
+          return redirect()->route('admin.teachers.index')->with('success', 'Teacher added successfully.');
     }
 
 
@@ -100,15 +100,19 @@ class TeacherController extends Controller
             'hire_date' => $validated['hire_date'] ,
             'address' => $validated['address'] ,
         ]);
-          return redirect()->back()->with('success', 'Teacher edited successfully.');
+          return redirect()->route('admin.teachers.index')->with('success', 'Teacher edited successfully.');
     }
 
 
 
     public function destroy(string $id)
     {
+        if(auth()->user()->hasRole('admin')){
         $teacher = User::findorfail($id)->delete();
         return back();
+        }else{
+            abort(403);
+        }
     }
 
 }

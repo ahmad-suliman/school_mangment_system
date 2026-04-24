@@ -16,10 +16,10 @@
             </p>
         </div>
         <div>
-        <a href="{{route('dashboard')}}" class="btn btn-outline-secondary rounded-3">
+        <a href="{{route('admin.dashboard')}}" class="btn btn-outline-secondary rounded-3">
             <i class="fas fa-arrow-left me-1"></i> Dashboard
         </a>
-        <a href="{{ route('class-subject-teachers.create') }}" class="btn btn-primary rounded-3">
+        <a href="{{ route('admin.class-subject-teachers.create') }}" class="btn btn-primary rounded-3">
             <i class="fas fa-plus me-1"></i> New Assignment
         </a>
         </div>
@@ -126,14 +126,14 @@
                                         <div class="d-flex justify-content-center gap-2">
 
                                             {{-- Edit --}}
-                                            <a href="{{route('class-subject-teachers.edit',$item->id)}}"
+                                            <a href="{{route('admin.class-subject-teachers.edit',$item->id)}}"
                                                class="btn btn-sm btn-warning rounded-3"
                                                title="Edit">
                                                 <i class="fas fa-pen"></i>
                                             </a>
 
                                             {{-- Delete --}}
-                                            <form action="{{route('class-subject-teachers.destroy',$item->id)}}"
+                                            <form action="{{route('admin.class-subject-teachers.destroy',$item->id)}}"
                                                   method="POST"
                                                   onsubmit="return confirm('Are you sure?')">
                                                 @csrf
@@ -172,7 +172,7 @@
                     <h5 class="fw-bold">No Assignments Found</h5>
                     <p class="text-muted">Start by creating a new assignment.</p>
 
-                    <a href="{{ route('class-subject-teachers.create') }}" class="btn btn-primary">
+                    <a href="{{ route('admin.class-subject-teachers.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus me-1"></i> Add Assignment
                     </a>
                 </div>

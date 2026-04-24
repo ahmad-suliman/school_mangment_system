@@ -18,10 +18,12 @@
                     class="btn btn-outline-secondary rounded-3">
                     <i class="fas fa-arrow-left me-1"></i> Dashboard
                 </a>
-                <a href="{{ auth()->user()->hasRole('admin') ? route('teacher.attendance.create') : route('teacher.attendance.create') }}"
+                @role('teacher')
+                <a href="{{ route('teacher.attendance.create') }}"
                     class="btn btn-primary shadow-sm">
                     <i class="fas fa-plus me-1"></i> Take Attendance
                 </a>
+                @endrole
             </div>
 
         </div>
@@ -173,12 +175,12 @@
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
 
-                                                    <a href="{{ route('attendance.edit', $item->id) }}"
+                                                    <a href="{{ route('admin.attendance.edit', $item->id) }}"
                                                         class="btn btn-sm btn-warning rounded-3">
                                                         <i class="fas fa-pen"></i>
                                                     </a>
 
-                                                    <form action="{{ route('attendance.destroy', $item->id) }}" method="POST"
+                                                    <form action="{{ route('admin.attendance.destroy', $item->id) }}" method="POST"
                                                         onsubmit="return confirm('Delete this record?')">
                                                         @csrf
                                                         @method('DELETE')

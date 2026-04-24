@@ -42,7 +42,7 @@ class ClassesController extends Controller
             'academic_year' => $validated['academic_year'],
         ]);
 
-        return redirect()->back()->with('success', 'class add successfuly');
+        return redirect()->route('admin.classes.index')->with('success', 'class add successfuly');
     }
 
     /**

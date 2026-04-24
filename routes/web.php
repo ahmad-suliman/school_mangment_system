@@ -77,7 +77,20 @@ Route::middleware(['auth','role:admin|teacher'])->group(function () {
     Route::resource('students',StudentController::class);
 
 });
+Route::middleware(['auth','role:student'])
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
 
+    Route::get('/dashboard',[DashboardController::class,'studentDashboard'])->name('dashboard');
+
+    Route::get('/grades',[GradeController::class,'index'])->name('grades.index');
+
+    Route::get('/attendance',[AttendanceController::class,'index'])->name('attendance.index');
+
+    Route::get('/subjects',[SubjectController::class,'index'])->name('subjects.index');
+
+});
 
 /*
 |--------------------------------------------------------------------------
