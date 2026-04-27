@@ -22,7 +22,7 @@ class AttendanceController extends Controller
             $attendances = Attendance::with('subject')
                 ->where('student_id', $student->id)
                 ->latest()
-                ->get();
+                ->paginate(10);;
         } elseif (auth()->user()->hasRole('teacher')) {
 
             $teacher = auth()->user()->teacher;
@@ -30,12 +30,12 @@ class AttendanceController extends Controller
             $attendances = Attendance::with('student.user', 'subject')
                 ->where('teacher_id', $teacher->id)
                 ->latest()
-                ->get();
+                ->paginate(10);;
         } else {
             // admin
             $attendances = Attendance::with('student.user', 'teacher.user', 'subject')
                 ->latest()
-                ->get();
+                ->paginate(10);;
         }
 
         return view('Admin.Attendance.index', compact('attendances'));

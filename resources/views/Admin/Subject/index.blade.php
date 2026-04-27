@@ -13,14 +13,21 @@
             </h2>
             <p class="text-muted mb-0">View, manage, and organize all school subjects.</p>
         </div>
-        <div>
-              <a href="{{route('admin.dashboard')}}" class="btn btn-outline-secondary rounded-3">
-            <i class="fas fa-arrow-left me-1"></i> Dashboard
-        </a>
-        <a href="{{ route('admin.subjects.create') }}" class="btn btn-primary rounded-3">
-            <i class="fas fa-plus me-1"></i> Add New Subject
-        </a>
-        </div>
+        @role('admin')
+            <div>
+                <a href="{{route('admin.dashboard')}}" class="btn btn-outline-secondary rounded-3">
+                <i class="fas fa-arrow-left me-1"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.subjects.create') }}" class="btn btn-primary rounded-3">
+                <i class="fas fa-plus me-1"></i> Add New Subject
+            </a>
+            </div>
+        @endrole
+        @role('student')
+            <a href="{{route('student.dashboard')}}" class="btn btn-outline-secondary rounded-3">
+                <i class="fas fa-arrow-left me-1"></i> Dashboard
+            </a>
+        @endrole
 
     </div>
 
@@ -72,7 +79,9 @@
                                 <th class="py-3">Subject Name</th>
                                 <th class="py-3">Subject Code</th>
                                 <th class="py-3">Created At</th>
+                                @role('admin')
                                 <th class="py-3 text-center">Actions</th>
+                                @endrole
                             </tr>
                         </thead>
                         <tbody>
@@ -107,7 +116,7 @@
                                             {{ $subject->created_at ? $subject->created_at->format('d M Y') : '-' }}
                                         </span>
                                     </td>
-
+                                    @role('admin')
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2">
 
@@ -135,6 +144,7 @@
 
                                         </div>
                                     </td>
+                                    @endrole
                                 </tr>
                             @endforeach
                         </tbody>

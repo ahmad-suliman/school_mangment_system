@@ -13,15 +13,33 @@
                 </h2>
                 <p class="text-muted mb-0">Manage and track student grades easily.</p>
             </div>
+            @role('admin')
             <div>
-                <a href="{{ auth()->user()->hasRole('admin')? route('admin.dashboard') : route('teacher.dashboard')}}" class="btn btn-outline-secondary">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
-                <a href="{{ auth()->user()->hasRole('admin') ? route('admin.grades.create') : route('teacher.grades.create') }}" class="btn btn-primary">
+                <a href="{{ route('admin.grades.create')  }}" class="btn btn-primary">
                     <i class="fas fa-plus me-1"></i> Add Grade
                 </a>
             </div>
-
+            @endrole
+            @role('teacher')
+            <div>
+                <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
+                <a href="{{ route('teacher.grades.create')  }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i> Add Grade
+                </a>
+            </div>
+            @endrole
+            @role('student')
+            <div>
+                <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
+            </div>
+            @endrole
         </div>
 
         {{-- ALERT --}}
@@ -177,7 +195,12 @@
 
                         </table>
                     </div>
-
+                     <div class="card-footer bg-white border-0 py-3 px-4">
+                    <small class="text-muted">
+                        <i class="fas fa-database me-1"></i>
+                        Total Grades: <strong>{{ $grades->count() }}</strong>
+                    </small>
+                </div>
                     {{-- PAGINATION --}}
                     <div class="p-3">
                         {{ $grades->links() }}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Class_subject_teacher;
 use App\Models\Classes;
+use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -72,14 +73,22 @@ class DashboardController extends Controller
         if (!$student) {
             abort(403, 'Student not found');
         }
-        $subjects = \App\Models\Subject::whereHas('grades', function ($q) use ($student) {
-            $q->where('student_id', $student->id);
-        })->get();
+
+        // ✅ Get subjects from class (CORRECT WAY)
+        $subjects = Class_subject_teacher::with('subject')
+            ->where('class_id', $student->class_id)
+            ->get()
+            ->pluck('subject')
+            ->unique('id');
 
         $subjectsCount = $subjects->count();
-        // attendance
-        $totalAttendance = \App\Models\Attendance::where('student_id', $student->id)->count();
-        $present = \App\Models\Attendance::where('student_id', $student->id)
+
+        // ✅ Attendance (optimized)
+        $attendanceQuery = Attendance::where('student_id', $student->id);
+
+        $totalAttendance = $attendanceQuery->count();
+
+        $present = (clone $attendanceQuery)
             ->where('status', 'present')
             ->count();
 
@@ -87,8 +96,8 @@ class DashboardController extends Controller
             ? round(($present / $totalAttendance) * 100)
             : 0;
 
-        // grades
-        $grades = \App\Models\Grade::with('subject')
+        // ✅ Grades
+        $grades = Grade::with('subject')
             ->where('student_id', $student->id)
             ->get();
 
@@ -96,14 +105,14 @@ class DashboardController extends Controller
             ? round($grades->avg('marks'), 2)
             : 0;
 
-        // recent
-        $recentAttendance = \App\Models\Attendance::with('subject')
+        // ✅ Recent activity
+        $recentAttendance = Attendance::with('subject')
             ->where('student_id', $student->id)
             ->latest()
             ->take(5)
             ->get();
 
-        $recentGrades = \App\Models\Grade::with('subject')
+        $recentGrades = Grade::with('subject')
             ->where('student_id', $student->id)
             ->latest()
             ->take(5)
@@ -112,6 +121,7 @@ class DashboardController extends Controller
         return view('Student.dashboard', compact(
             'student',
             'subjects',
+            'subjectsCount',
             'attendanceRate',
             'averageGrade',
             'grades',

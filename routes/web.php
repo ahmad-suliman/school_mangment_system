@@ -77,6 +77,11 @@ Route::middleware(['auth','role:admin|teacher'])->group(function () {
     Route::resource('students',StudentController::class);
 
 });
+/*
+|--------------------------------------------------------------------------
+| STUDENT ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth','role:student'])
     ->prefix('student')
     ->name('student.')

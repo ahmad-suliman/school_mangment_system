@@ -22,7 +22,7 @@ class GradeController extends Controller
             $grades = Grade::with('subject')
                 ->where('student_id', $student->id)
                 ->latest()
-                ->get();
+                ->paginate(10);
         } elseif (auth()->user()->hasRole('teacher')) {
 
             $teacher = auth()->user()->teacher;
@@ -30,12 +30,12 @@ class GradeController extends Controller
             $grades = Grade::with('student.user', 'subject')
                 ->where('teacher_id', $teacher->id)
                 ->latest()
-                ->get();
+                ->paginate(10);;
         } else {
             // admin
             $grades = Grade::with('student.user', 'subject', 'teacher.user')
                 ->latest()
-                ->get();
+                ->paginate(10);
         }
 
         return view('Admin.Grade.index', compact('grades'));

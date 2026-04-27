@@ -16,7 +16,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         // Load teacher or student relation if needed
-        $user->load(['teacher', 'student']);
+        $user->load(['teacher', 'student.classroom']);
 
         return view('profile.show', compact('user'));
     }
@@ -35,16 +35,31 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = auth()->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // upload photo
+        if ($request->hasFile('profile_photo')) {
+
+            // delete old
+            if ($user->profile_photo) {
+                \Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $data['profile_photo'] = $request->file('profile_photo')
+                ->store('profiles', 'public');
         }
 
-        $request->user()->save();
+        $user->update($data);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return back()->with('success', 'Profile updated successfully');
     }
+
 
     /**
      * Delete the user's account.

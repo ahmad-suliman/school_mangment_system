@@ -14,16 +14,31 @@
                 <p class="text-muted mb-0">Manage and track student attendance records.</p>
             </div>
             <div>
-                <a href="{{ auth()->user()->hasRole('admin') ? route('admin.dashboard') : route('teacher.dashboard') }}"
-                    class="btn btn-outline-secondary rounded-3">
-                    <i class="fas fa-arrow-left me-1"></i> Dashboard
-                </a>
-                @role('teacher')
+            @role('admin')
+            <div>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
+            </div>
+            @endrole
+            @role('teacher')
+            <div>
+                <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
                 <a href="{{ route('teacher.attendance.create') }}"
                     class="btn btn-primary shadow-sm">
                     <i class="fas fa-plus me-1"></i> Take Attendance
                 </a>
-                @endrole
+            </div>
+            @endrole
+            @role('student')
+            <div>
+                <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Dashboard
+                    </a>
+            </div>
+            @endrole
             </div>
 
         </div>
@@ -203,7 +218,12 @@
 
                         </table>
                     </div>
-
+                     <div class="card-footer bg-white border-0 py-3 px-4">
+                    <small class="text-muted">
+                        <i class="fas fa-database me-1"></i>
+                        Total Attendance : <strong>{{ $attendances->count() }}</strong>
+                    </small>
+                </div>
                     {{-- PAGINATION --}}
                     <div class="card-footer bg-white border-0 py-3 text-center">
                         {{ $attendances->links() }}

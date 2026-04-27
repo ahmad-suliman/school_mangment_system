@@ -16,9 +16,12 @@ class SubjectController extends Controller
 
             $student = auth()->user()->student;
 
-            $subjects = $student->classroom->subjects ?? collect();
+            $subjects = Subject::whereHas('classSubjectTeachers', function ($q) use ($student) {
+            $q->where('class_id', $student->class_id);
+        })->paginate(10);
+
         } else {
-            $subjects = Subject::all();
+            $subjects = Subject::paginate(10);
         }
 
         return view('Admin.Subject.index', compact('subjects'));
