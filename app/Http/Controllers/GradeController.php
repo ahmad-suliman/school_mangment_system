@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreGradeRequest;
 use App\Models\Class_subject_teacher;
 use App\Models\Classes;
 use App\Models\Grade;
@@ -67,58 +68,58 @@ class GradeController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreGradeRequest $request)
     {
-        $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'marks' => 'required|numeric|min:0|max:100',
-        ]);
-
-        // ================= GET TEACHER =================
+        // 🎯 Resolve teacher_id
         if (auth()->user()->hasRole('teacher')) {
 
             $teacher = auth()->user()->teacher;
 
             if (!$teacher) {
-                return back()->with('danger', 'Teacher not found');
+                return redirect()->back()->with('danger', 'Teacher not found');
             }
 
             $teacher_id = $teacher->id;
 
-            // SECURITY: teacher can only add his subject
+            // 🔒 Security check
             $allowed = Class_subject_teacher::where([
                 'teacher_id' => $teacher_id,
                 'subject_id' => $request->subject_id
             ])->exists();
 
             if (!$allowed) {
-                return back()->with('danger', 'You are not allowed for this subject');
+                return redirect()->back()->with('danger', 'Not allowed for this subject');
             }
         } else {
-
-            // admin must choose teacher
-            $request->validate([
-                'teacher_id' => 'required|exists:teachers,id'
-            ]);
-
             $teacher_id = $request->teacher_id;
         }
 
-        // ================= SAVE =================
+        // 🚫 Prevent duplicate grade (IMPORTANT)
+        $exists = Grade::where([
+            'student_id' => $request->student_id,
+            'subject_id' => $request->subject_id,
+        ])->exists();
+
+        if ($exists) {
+            return redirect()->back()
+                ->withInput()
+                ->with('danger', 'Grade already exists for this student & subject');
+        }
+
+        // 💾 Save
         Grade::create([
             'student_id' => $request->student_id,
             'subject_id' => $request->subject_id,
             'teacher_id' => $teacher_id,
-            'marks' => $request->marks,
+            'marks'      => $request->marks,
         ]);
-        if (auth()->user()->hasRole('admin')) {
-            return redirect()->route('admin.grades.index')
-                ->with('success', 'Grade added successfully');
-        } else {
-            return redirect()->route('teacher.grades.index')
-                ->with('success', 'Grade added successfully');
-        }
+
+        // 🔁 Redirect
+        return redirect()->route(
+            auth()->user()->hasRole('admin')
+                ? 'admin.grades.index'
+                : 'teacher.grades.index'
+        )->with('success', 'Grade added successfully');
     }
 
 

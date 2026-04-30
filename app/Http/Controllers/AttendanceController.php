@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAttendanceRequest;
 use App\Models\Attendance;
 use App\Models\Class_subject_teacher;
 use App\Models\Student;
@@ -100,78 +101,61 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreAttendanceRequest $request)
     {
-        $request->validate([
-            'class_id' => 'required|exists:classes,id',
-            'subject_id' => 'required|exists:subjects,id',
-            'date' => 'required|date',
-            'attendance' => 'required|array',
-        ]);
-
+        // 🎯 Get teacher_id
         if (auth()->user()->hasRole('teacher')) {
 
             $teacher = auth()->user()->teacher;
 
             if (!$teacher) {
-                return back()->with('danger', 'Teacher profile not found.');
+                return redirect()->back()->with('danger', 'Teacher profile not found.');
             }
 
             $teacher_id = $teacher->id;
         } else {
-            $request->validate([
-                'teacher_id' => 'required|exists:teachers,id',
-            ]);
-
             $teacher_id = $request->teacher_id;
         }
+
+        // 🔒 Check permission (teacher only)
         if (auth()->user()->hasRole('teacher')) {
 
-            $allowed = \App\Models\Class_subject_teacher::where([
+            $allowed = Class_subject_teacher::where([
                 'teacher_id' => $teacher_id,
                 'subject_id' => $request->subject_id,
                 'class_id' => $request->class_id,
             ])->exists();
 
             if (!$allowed) {
-                return back()->with('danger', 'You are not allowed to take attendance for this subject.');
+                return redirect()->back()->with('danger', 'Not allowed.');
             }
         }
 
+        // 🚫 Prevent duplicate
         $exists = Attendance::where('class_id', $request->class_id)
             ->where('subject_id', $request->subject_id)
             ->where('date', $request->date)
             ->exists();
 
         if ($exists) {
-            if (auth()->user()->hasRole('admin')) {
-                return redirect()->route('admin.attendance.create')->withInput()
-                    ->with('danger', 'Attendance already taken for this subject today.');
-            } else {
-                return redirect()->route('teacher.attendance.create')->withInput()
-                    ->with('danger', 'Attendance already taken for this subject today.');
-            }
+            return redirect()->back()->withInput()
+                ->with('danger', 'Attendance already taken.');
         }
 
-
+        // 💾 Save
         foreach ($request->attendance as $student_id => $status) {
 
             Attendance::create([
                 'student_id' => $student_id,
-                'class_id' => $request->class_id,
+                'class_id'   => $request->class_id,
                 'subject_id' => $request->subject_id,
                 'teacher_id' => $teacher_id,
-                'date' => $request->date,
-                'status' => $status,
+                'date'       => $request->date,
+                'status'     => $status,
             ]);
         }
-        if (auth()->user()->hasRole('admin')) {
-            return redirect()->route('admin.attendance.index')
-                ->with('success', 'Attendance saved successfully');
-        } else {
-            return redirect()->route('teacher.attendance.index')
-                ->with('success', 'Attendance saved successfully');
-        }
+
+        return redirect()->route('teacher.attendance.index')->with('success', 'Attendance saved');
     }
 
     public function edit($id)

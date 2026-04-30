@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Classes;
 use App\Models\Student;
 use App\Models\User;
@@ -16,8 +18,8 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::with(['user','classroom'])->paginate(10);
-        return view('Student.index',compact('students'));
+        $students = Student::with(['user', 'classroom'])->paginate(10);
+        return view('Student.index', compact('students'));
     }
 
     /**
@@ -25,58 +27,41 @@ class StudentController extends Controller
      */
     public function create()
     {
-        $classroom = Classes::select('id','class_name','section')->orderBy('section')->get();
-        $student_id =Student::count();
-        return view('Student.create',compact('classroom','student_id'));
+        $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
+        $student_id = Student::count();
+        return view('Student.create', compact('classroom', 'student_id'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request)
     {
 
-        $validated = $request->validate([
-        //user table
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|max:255|unique:users,email',
-        'password' => 'required|string|min:8',
-        'status' => 'required|in:0,1',
-        'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-
-        // Student table
-        'student_id' => 'required|string|max:50|unique:students,student_id',
-        'class_id' => 'required|exists:classes,id',
-        'phone' => 'required|nullable|string|max:20',
-        'birth_date'=>'required|date',
-        'address' => 'required|nullable|string|max:500',
-        'guardian_name' => 'required|nullable|string|max:255',
-        'guardian_phone' => 'required|nullable|string|max:255',
-        ]);
-      $photoPath = null;
+        $data = $request->validated();
+        $photoPath = null;
         if ($request->hasFile('profile_photo')) {
             $photoPath = $request->file('profile_photo')->store('students', 'public');
         }
         $user = User::create([
-            'name'=>$validated['name'],
-            'email'=>$validated['email'],
-            'password'=>Hash::make($validated['password']),
-            'status'=>$validated['status'],
-            'profile_photo'=>$photoPath,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'status' => $data['status'],
+            'profile_photo' => $photoPath,
         ]);
         $user->assignRole('student');
         Student::create([
-            'user_id'=>$user->id,
-            'student_id'=>$validated['student_id'],
-            'class_id'=>$validated['class_id'],
-            'phone'=>$validated['phone'],
-            'birth_date'=>$validated['birth_date'],
-            'address'=>$validated['address'],
-            'guardian_name'=>$validated['guardian_name'],
-            'guardian_phone'=>$validated['guardian_phone'],
+            'user_id' => $user->id,
+            'student_id' => $data['student_id'],
+            'class_id' => $data['class_id'],
+            'phone' => $data['phone'],
+            'birth_date' => $data['birth_date'],
+            'address' => $data['address'],
+            'guardian_name' => $data['guardian_name'],
+            'guardian_phone' => $data['guardian_phone'],
         ]);
-        return redirect()->route('students.index')->with('success','Student Added Successfuly');
-
+        return redirect()->route('students.index')->with('success', 'Student Added Successfuly');
     }
 
     /**
@@ -84,8 +69,8 @@ class StudentController extends Controller
      */
     public function show(\App\Models\Student $student)
     {
-        $student->load('user','classroom');
-        return view('Student.show',compact('student'));
+        $student->load('user', 'classroom');
+        return view('Student.show', compact('student'));
     }
 
     /**
@@ -93,41 +78,30 @@ class StudentController extends Controller
      */
     public function edit(string $id)
     {
-        $classroom = Classes::select('id','class_name','section')->orderBy('section')->get();
+        $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
         $student = Student::with(['user',])->findOrFail($id);
-        return view('Student.edit',compact('student','classroom'));
+        return view('Student.edit', compact('student', 'classroom'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateStudentRequest $request, string $id)
     {
+        $data = $request->validated();
         $user_id = $request->user_id;
-         $validated = $request->validate([
-        //user table
-        'name' => 'required|string|max:255',
-
-        // Student table
-        'class_id' => 'required|exists:classes,id',
-        'phone' => 'required|nullable|string|max:20',
-        'birth_date'=>'required|date',
-        'address' => 'required|nullable|string|max:500',
-        'guardian_name' => 'required|nullable|string|max:255',
-        'guardian_phone' => 'required|nullable|string|max:255',
-        ]);
         $user = User::findorfail($user_id)->update([
-            'name'=>$validated['name'],
+            'name' => $data['name'],
         ]);
         Student::findorfail($id)->update([
-            'class_id'=>$validated['class_id'],
-            'phone'=>$validated['phone'],
-            'birth_date'=>$validated['birth_date'],
-            'address'=>$validated['address'],
-            'guardian_name'=>$validated['guardian_name'],
-            'guardian_phone'=>$validated['guardian_phone'],
+            'class_id' => $data['class_id'],
+            'phone' => $data['phone'],
+            'birth_date' => $data['birth_date'],
+            'address' => $data['address'],
+            'guardian_name' => $data['guardian_name'],
+            'guardian_phone' => $data['guardian_phone'],
         ]);
-        return redirect()->route('students.index')->with('success','Student Updated Successfuly');
+        return redirect()->route('students.index')->with('success', 'Student Updated Successfuly');
     }
 
     /**
@@ -136,6 +110,6 @@ class StudentController extends Controller
     public function destroy(string $id)
     {
         $student = Student::findorfail($id)->delete();
-        return back()->with('danger','Student Delete It!');
+        return back()->with('danger', 'Student Delete It!');
     }
 }

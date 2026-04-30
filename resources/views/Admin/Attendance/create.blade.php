@@ -45,8 +45,7 @@
             </div>
 
             <div class="card-body">
-                <form action="{{ route('teacher.attendance.load') }}" method="POST">
-                    @csrf
+                <form action="{{ route('teacher.attendance.load') }}" method="GET">
 
                     <div class="row g-3">
 

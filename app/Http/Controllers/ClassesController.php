@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClassessRequest;
 use App\Models\Classes;
 use Illuminate\Http\Request;
 
@@ -26,33 +27,18 @@ class ClassesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClassessRequest $request)
     {
-        $validated = $request->validate([
-            'class_name' => 'required|string|max:255',
-            'section' => 'nullable|string|max:50',
-            'academic_year' => ['required', 'regex:/^\d{4}-\d{4}$/'],
-        ], [
-            'academic_year.regex' => 'Academic year must be like 2025-2026',
-        ]);
 
-        Classes::create([
-            'class_name' => $validated['class_name'],
-            'section' => $validated['section'],
-            'academic_year' => $validated['academic_year'],
-        ]);
-
+        $exists = Classes::where('class_name',$request->class_name)->where('section',$request->section)->exists();
+        if(!$exists){
+        Classes::create($request->validated());
+        }else{
+            return redirect()->back()->with('danger','classroom alraedy exists');
+        }
         return redirect()->route('admin.classes.index')->with('success', 'class add successfuly');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id) {}
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $classes = Classes::findorfail($id);
@@ -62,20 +48,10 @@ class ClassesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreClassessRequest $request, string $id)
     {
-        $validated = $request->validate([
-            'class_name' => 'required|string|max:255',
-            'section' => 'nullable|string|max:50',
-            'academic_year' => ['required', 'regex:/^\d{4}-\d{4}$/'],
-        ], [
-            'academic_year.regex' => 'Academic year must be like 2025-2026',
-        ]);
-        Classes::findorfail($id)->update([
-            'class_name' => $validated['class_name'],
-            'section' => $validated['section'],
-            'academic_year' => $validated['academic_year'],
-        ]);
+
+        Classes::findorfail($id)->update($request->validated());
         return redirect()->back()->with('success', 'class edit successfuly');
     }
 

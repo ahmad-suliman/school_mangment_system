@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClassSubjectTeacherRequest;
 use App\Models\Class_subject_teacher;
 use App\Models\Classes;
 use App\Models\Subject;
@@ -40,22 +41,10 @@ class ClassSubjectTeacherController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClassSubjectTeacherRequest $request)
     {
-        $valideted = $request->validate([
-            'class_id' => 'required|exists:classes,id',
-            'subject_id'=>'required|exists:subjects,id',
-            'teacher_id'=>'required|exists:teachers,id',
-            'academic_year' => ['required', 'regex:/^\d{4}-\d{4}$/'],
-        ], [
-            'academic_year.regex' => 'Academic year must be like 2025-2026',
-        ]);
-        Class_subject_teacher::create([
-            'class_id' => $valideted['class_id'],
-            'subject_id' => $valideted['subject_id'],
-            'teacher_id' => $valideted['teacher_id'],
-            'academic_year' => $valideted['academic_year'],
-        ]);
+
+        Class_subject_teacher::create($request->validated());
 
         return redirect()->route('admin.class-subject-teachers.index')->with('success','subject assign successfuly!');
     }
@@ -77,23 +66,10 @@ class ClassSubjectTeacherController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreClassSubjectTeacherRequest $request, string $id)
     {
-        $valideted = $request->validate([
-            'class_id' => 'required|exists:classes,id',
-            'subject_id'=>'required|exists:subjects,id',
-            'teacher_id'=>'required|exists:teachers,id',
-            'academic_year' => ['required', 'regex:/^\d{4}-\d{4}$/'],
-        ], [
-            'academic_year.regex' => 'Academic year must be like 2025-2026',
-        ]);
         $assignment = Class_subject_teacher::findorfail($id);
-        $assignment->update([
-            'class_id'=>$valideted['class_id'],
-            'subject_id'=>$valideted['subject_id'],
-            'teacher_id'=>$valideted['teacher_id'],
-            'academic_year'=>$valideted['academic_year'],
-        ]);
+        $assignment->update($request->validated());
         return redirect()->route('admin.class-subject-teachers.index')->with('success','Assignment Edited Successfuly!');
     }
 

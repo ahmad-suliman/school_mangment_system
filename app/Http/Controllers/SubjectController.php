@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSubjectRequest;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 
@@ -38,15 +39,12 @@ class SubjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSubjectRequest $request)
     {
-        $validated = $request->validate([
-            'subject_name' => 'required|string|max:255',
-            'subject_code' => 'required|string|max:4|unique:subjects,subject_code',
-        ]);
+        $data = $request->validated();
         Subject::create([
-            'subject_name' => $validated['subject_name'],
-            'subject_code' => strtoupper($validated['subject_code']),
+            'subject_name' => $data['subject_name'],
+            'subject_code' => strtoupper($data['subject_code']),
         ]);
         return redirect()->route('admin.subjects.index')->with('success', 'Subject Added Successfuly!');
     }
@@ -64,16 +62,12 @@ class SubjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Subject $subject)
+    public function update(StoreSubjectRequest $request, Subject $subject)
     {
-        $request->validate([
-            'subject_name' => 'required|string|max:255',
-            'subject_code' => 'required|string|max:4|unique:subjects,subject_code,' . $subject->id,
-        ]);
-
+        $data = $request->validated();
         $subject->update([
-            'subject_name' => $request->subject_name,
-            'subject_code' => strtoupper($request->subject_code),
+            'subject_name' => $data['subject_name'],
+            'subject_code' => strtoupper($data['subject_code']),
         ]);
 
         return redirect()->route('subjects.index')->with('success', 'Subject updated successfully.');

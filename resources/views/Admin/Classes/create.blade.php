@@ -27,6 +27,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session('danger'))
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3 border-0" role="alert">
+                <i class="fas fa-circle-check me-2"></i>
+                {{ session('danger') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         @if ($errors->any())
             <div class="alert alert-danger shadow-sm border-0 rounded-3">
                 <div class="fw-semibold mb-2">

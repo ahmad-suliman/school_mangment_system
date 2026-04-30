@@ -58,7 +58,7 @@ Route::middleware(['auth','role:teacher'])
     // Attendance (teacher only create/store)
     Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
-    Route::post('attendance/load', [AttendanceController::class, 'loadStudents'])->name('attendance.load');
+    Route::get('attendance/load', [AttendanceController::class, 'loadStudents'])->name('attendance.load');
     Route::post('attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
 
     // Grades
