@@ -9,13 +9,16 @@ use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class GradeController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index()
     {
+        $this->authorize('viewAny',Grade::class);
         if (auth()->user()->hasRole('student')) {
 
             $student = auth()->user()->student;
@@ -44,6 +47,7 @@ class GradeController extends Controller
 
     public function create()
     {
+        $this->authorize('create',Grade::class);
         $classes = Classes::all();
         $students = Student::with('user')->get();
 
@@ -70,7 +74,8 @@ class GradeController extends Controller
 
     public function store(StoreGradeRequest $request)
     {
-        // 🎯 Resolve teacher_id
+        $this->authorize('create',Grade::class);
+        //  Resolve teacher_id
         if (auth()->user()->hasRole('teacher')) {
 
             $teacher = auth()->user()->teacher;
@@ -81,7 +86,7 @@ class GradeController extends Controller
 
             $teacher_id = $teacher->id;
 
-            // 🔒 Security check
+            // Security check
             $allowed = Class_subject_teacher::where([
                 'teacher_id' => $teacher_id,
                 'subject_id' => $request->subject_id
@@ -94,7 +99,7 @@ class GradeController extends Controller
             $teacher_id = $request->teacher_id;
         }
 
-        // 🚫 Prevent duplicate grade (IMPORTANT)
+        // Prevent duplicate grade (IMPORTANT)
         $exists = Grade::where([
             'student_id' => $request->student_id,
             'subject_id' => $request->subject_id,
@@ -106,7 +111,7 @@ class GradeController extends Controller
                 ->with('danger', 'Grade already exists for this student & subject');
         }
 
-        // 💾 Save
+        //  Save
         Grade::create([
             'student_id' => $request->student_id,
             'subject_id' => $request->subject_id,
@@ -114,7 +119,7 @@ class GradeController extends Controller
             'marks'      => $request->marks,
         ]);
 
-        // 🔁 Redirect
+        // Redirect
         return redirect()->route(
             auth()->user()->hasRole('admin')
                 ? 'admin.grades.index'
@@ -126,7 +131,7 @@ class GradeController extends Controller
     public function edit(string $id)
     {
         $grade = Grade::findOrFail($id);
-
+        $this->authorize('update',$grade);
         return view('Admin.Grade.edit', compact('grade'));
     }
 
@@ -138,6 +143,7 @@ class GradeController extends Controller
         ]);
 
         $grade = Grade::findOrFail($id);
+        $this->authorize('update',$grade);
         $grade->update([
             'marks' => $request->marks
         ]);
@@ -152,12 +158,9 @@ class GradeController extends Controller
 
     public function destroy(string $id)
     {
-        if (auth()->user()->hasRole('admin')) {
-            Grade::findOrFail($id)->delete();
-
-            return back()->with('success', 'Deleted successfully');
-        } else {
-            abort(403);
-        }
+        $grade =  Grade::findOrFail($id);
+        $this->authorize('delete',$grade);
+        $grade->delete();
+        return back()->with('success', 'Deleted successfully');
     }
 }

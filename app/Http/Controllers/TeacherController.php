@@ -11,19 +11,19 @@ use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
-
+    //show all teacher
     public function index()
     {
         $teachers = Teacher::with('user')->latest()->paginate(10);
         return view('Admin.Teacher.index', compact('teachers'));
     }
-
+    // create page teacher
     public function create()
     {
         return view('Admin.Teacher.create', ['teacher_id' => Teacher::count()]);
     }
 
-
+    // save teacher in DB
     public function store(StoreTeacherRequest $request)
     {
         $data = $request->validated();
@@ -51,14 +51,14 @@ class TeacherController extends Controller
         return redirect()->route('admin.teachers.index')->with('success', 'Teacher added successfully.');
     }
 
-
+    //show teacher info
     public function show(\App\Models\Teacher $teacher)
     {
         $teacher->load('user');
 
         return view('Admin.Teacher.show', compact('teacher'));
     }
-
+    // edit teacher
     public function edit(string $id)
     {
 
@@ -66,7 +66,7 @@ class TeacherController extends Controller
         return view('Admin.Teacher.edit', compact('teacher'));
     }
 
-
+    // update teacher
     public function update(UpdateTeacherRequest $request, string $id)
     {
         $data = $request->validated();
@@ -83,8 +83,7 @@ class TeacherController extends Controller
         return redirect()->route('admin.teachers.index')->with('success', 'Teacher edited successfully.');
     }
 
-
-
+    //delete teacher
     public function destroy(string $id)
     {
         if (auth()->user()->hasRole('admin')) {

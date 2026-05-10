@@ -74,7 +74,7 @@ class DashboardController extends Controller
             abort(403, 'Student not found');
         }
 
-        // ✅ Get subjects from class (CORRECT WAY)
+        // Get subjects from class (CORRECT WAY)
         $subjects = Class_subject_teacher::with('subject')
             ->where('class_id', $student->class_id)
             ->get()
@@ -83,7 +83,7 @@ class DashboardController extends Controller
 
         $subjectsCount = $subjects->count();
 
-        // ✅ Attendance (optimized)
+        // Attendance (optimized)
         $attendanceQuery = Attendance::where('student_id', $student->id);
 
         $totalAttendance = $attendanceQuery->count();
@@ -96,7 +96,7 @@ class DashboardController extends Controller
             ? round(($present / $totalAttendance) * 100)
             : 0;
 
-        // ✅ Grades
+        //  Grades
         $grades = Grade::with('subject')
             ->where('student_id', $student->id)
             ->get();
@@ -105,7 +105,7 @@ class DashboardController extends Controller
             ? round($grades->avg('marks'), 2)
             : 0;
 
-        // ✅ Recent activity
+        //  Recent activity
         $recentAttendance = Attendance::with('subject')
             ->where('student_id', $student->id)
             ->latest()

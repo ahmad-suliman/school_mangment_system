@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClassessRequest;
 use App\Models\Classes;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ClassesController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('viewAny',Classes::class);
         return view('Admin.Classes.index', ['classes' => Classes::all()]);
     }
 
@@ -21,6 +25,7 @@ class ClassesController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',Classes::class);
         return view('Admin.Classes.create');
     }
 
@@ -29,7 +34,8 @@ class ClassesController extends Controller
      */
     public function store(StoreClassessRequest $request)
     {
-
+        $this->authorize('create',Classes::class);
+        //CHECK IF THE CLASSROOM EXIST IN DB
         $exists = Classes::where('class_name',$request->class_name)->where('section',$request->section)->exists();
         if(!$exists){
         Classes::create($request->validated());
@@ -42,6 +48,7 @@ class ClassesController extends Controller
     public function edit(string $id)
     {
         $classes = Classes::findorfail($id);
+        $this->authorize('update',$classes);
         return view('Admin.Classes.edit', compact('classes'));
     }
 
@@ -51,7 +58,8 @@ class ClassesController extends Controller
     public function update(StoreClassessRequest $request, string $id)
     {
 
-        Classes::findorfail($id)->update($request->validated());
+        $classes = Classes::findorfail($id)->update($request->validated());
+        $this->authorize('update',$classes);
         return redirect()->back()->with('success', 'class edit successfuly');
     }
 
@@ -60,7 +68,9 @@ class ClassesController extends Controller
      */
     public function destroy(string $id)
     {
-       $classes = Classes::findorfail($id)->delete();
+       $classes = Classes::findorfail($id);
+       $this->authorize('delete',$classes);
+       $classes->delete();
        return redirect()->back()->with('danger', 'class deleted successfuly');
     }
 }

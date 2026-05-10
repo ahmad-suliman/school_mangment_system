@@ -7,31 +7,32 @@ use App\Models\Class_subject_teacher;
 use App\Models\Classes;
 use App\Models\Subject;
 use App\Models\Teacher;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class ClassSubjectTeacherController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('viewAny',Class_subject_teacher::class);
+        $assignments = Class_subject_teacher::with([
+            'classroom',
+            'subject',
+            'teacher.user',
+        ])->latest()->paginate(10);
 
-    $assignments = Class_subject_teacher::with([
-        'classroom',
-        'subject',
-        'teacher.user',
-    ])->latest()->paginate(10);
-
-    return view('Admin.ClassSubjectTeacher.index', compact('assignments'));
+        return view('Admin.ClassSubjectTeacher.index', compact('assignments'));
     }
-
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
+        $this->authorize('create',Class_subject_teacher::class);
         $classes = Classes::all();
         $subjects = Subject::all();
         $teachers = Teacher::with('user')->get();
@@ -43,14 +44,12 @@ class ClassSubjectTeacherController extends Controller
      */
     public function store(StoreClassSubjectTeacherRequest $request)
     {
+        $this->authorize('create',Class_subject_teacher::class);
 
         Class_subject_teacher::create($request->validated());
 
         return redirect()->route('admin.class-subject-teachers.index')->with('success','subject assign successfuly!');
     }
-
-
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -60,6 +59,7 @@ class ClassSubjectTeacherController extends Controller
         $subjects = Subject::all();
         $teachers = Teacher::with('user')->get();
         $classSubjectTeacher = Class_subject_teacher::findorfail($id);
+        $this->authorize('update',$classSubjectTeacher);
         return view('Admin.ClassSubjectTeacher.edit',compact('classes','subjects','teachers','classSubjectTeacher'));
     }
 
@@ -69,6 +69,7 @@ class ClassSubjectTeacherController extends Controller
     public function update(StoreClassSubjectTeacherRequest $request, string $id)
     {
         $assignment = Class_subject_teacher::findorfail($id);
+        $this->authorize('update',$assignment);
         $assignment->update($request->validated());
         return redirect()->route('admin.class-subject-teachers.index')->with('success','Assignment Edited Successfuly!');
     }
@@ -77,7 +78,9 @@ class ClassSubjectTeacherController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id){
-        $assignment = Class_subject_teacher::findorfail($id)->delete();
+        $assignment = Class_subject_teacher::findorfail($id);
+        $this->authorize('delete',$assignment);
+        $assignment->delete();
         return redirect()->back()->with('danger','Assignment Was Deleted');
     }
 }

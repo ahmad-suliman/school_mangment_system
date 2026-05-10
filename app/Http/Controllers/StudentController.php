@@ -4,21 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Models\Class_subject_teacher;
 use App\Models\Classes;
 use App\Models\Student;
 use App\Models\User;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use PhpParser\Builder\Class_;
 
 class StudentController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $students = Student::with(['user', 'classroom'])->paginate(10);
+        $this->authorize('viewAny',Student::class);
+        $user = auth()->user();
+        if($user->hasRole('admin')){
+            $students = Student::with(['user', 'classroom'])->paginate(10);
+        }elseif($user->hasRole('teacher')){
+          $teacher = $user->teacher;
+          $classId = Class_subject_teacher::where('teacher_id',$teacher->id)->pluck('class_id')->unique();
+          $students = Student::with(['user','classroom'])->whereIn('class_id',$classId)->paginate(10);
+        }
         return view('Student.index', compact('students'));
     }
 
@@ -27,6 +38,7 @@ class StudentController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',Student::class);
         $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
         $student_id = Student::count();
         return view('Student.create', compact('classroom', 'student_id'));
@@ -37,7 +49,7 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-
+        $this->authorize('create',Student::class);
         $data = $request->validated();
         $photoPath = null;
         if ($request->hasFile('profile_photo')) {
@@ -69,6 +81,7 @@ class StudentController extends Controller
      */
     public function show(\App\Models\Student $student)
     {
+        $this->authorize('view',$student);
         $student->load('user', 'classroom');
         return view('Student.show', compact('student'));
     }
@@ -79,7 +92,8 @@ class StudentController extends Controller
     public function edit(string $id)
     {
         $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
-        $student = Student::with(['user',])->findOrFail($id);
+        $student = Student::with(['user'])->findOrFail($id);
+        $this->authorize('update',$student);
         return view('Student.edit', compact('student', 'classroom'));
     }
 
@@ -88,12 +102,14 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, string $id)
     {
+        $student = Student::findorfail($id);
+        $this->authorize('update',$student);
         $data = $request->validated();
         $user_id = $request->user_id;
         $user = User::findorfail($user_id)->update([
             'name' => $data['name'],
         ]);
-        Student::findorfail($id)->update([
+        $student->update([
             'class_id' => $data['class_id'],
             'phone' => $data['phone'],
             'birth_date' => $data['birth_date'],
@@ -109,7 +125,9 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Student::findorfail($id)->delete();
+        $student = Student::findorfail($id);
+        $this->authorize('delete',$student);
+        $student->delete();
         return back()->with('danger', 'Student Delete It!');
     }
 }

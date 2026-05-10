@@ -45,7 +45,11 @@
                             <i class="fa fa-chart-column me-2"></i> Grades List
                         </a>
                     </li>
-
+                    <li>
+                        <a href="{{ route('students.index') }}" class="nav-link text-white">
+                            <i class="fa fa-user me-2"></i> My Student
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="mt-auto p-3 border-top">
