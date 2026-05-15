@@ -106,9 +106,7 @@ class GradeController extends Controller
         ])->exists();
 
         if ($exists) {
-            return redirect()->back()
-                ->withInput()
-                ->with('danger', 'Grade already exists for this student & subject');
+            return redirect()->back()->with('danger', 'Grade already exists for this student & subject');
         }
 
         //  Save

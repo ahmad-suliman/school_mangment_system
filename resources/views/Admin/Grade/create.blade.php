@@ -20,6 +20,12 @@
     </div>
 
     {{-- ALERTS --}}
+            @if (session('danger'))
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{ session('danger') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
     @if ($errors->any())
         <div class="alert alert-danger">
             <strong>Oops!</strong> Fix these errors:

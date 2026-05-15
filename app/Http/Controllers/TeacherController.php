@@ -6,26 +6,31 @@ use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
 use App\Models\User;
 use App\Models\Teacher;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
+    use AuthorizesRequests;
     //show all teacher
     public function index()
     {
+        $this->authorize('viewAny',Teacher::class);
         $teachers = Teacher::with('user')->latest()->paginate(10);
         return view('Admin.Teacher.index', compact('teachers'));
     }
     // create page teacher
     public function create()
     {
+        $this->authorize('create',Teacher::class);
         return view('Admin.Teacher.create', ['teacher_id' => Teacher::count()]);
     }
 
     // save teacher in DB
     public function store(StoreTeacherRequest $request)
     {
+        $this->authorize('create',Teacher::class);
         $data = $request->validated();
         $photoPath = null;
         if ($request->hasFile('profile_photo')) {
@@ -54,6 +59,7 @@ class TeacherController extends Controller
     //show teacher info
     public function show(\App\Models\Teacher $teacher)
     {
+        $this->authorize('view',$teacher);
         $teacher->load('user');
 
         return view('Admin.Teacher.show', compact('teacher'));
@@ -63,18 +69,21 @@ class TeacherController extends Controller
     {
 
         $teacher = Teacher::with('user')->findOrFail($id);
+        $this->authorize('update',$teacher);
         return view('Admin.Teacher.edit', compact('teacher'));
     }
 
     // update teacher
     public function update(UpdateTeacherRequest $request, string $id)
     {
+        $teacher = Teacher::findorfail($id);
+        $this->authorize('update',$teacher);
         $data = $request->validated();
         $user = User::findorfail($request->u_id)->update([
             'name' => $data['name'],
 
         ]);
-        Teacher::findorfail($id)->update([
+        $teacher->update([
             'phone' => $data['phone'],
             'specialization' => $data['specialization'],
             'hire_date' => $data['hire_date'],
@@ -86,11 +95,10 @@ class TeacherController extends Controller
     //delete teacher
     public function destroy(string $id)
     {
-        if (auth()->user()->hasRole('admin')) {
-            $teacher = User::findorfail($id)->delete();
+        $teacher = User::findorfail($id);
+        $this->authorize('delete',$teacher);
+        $teacher->delete();
             return back();
-        } else {
-            abort(403);
-        }
+
     }
 }

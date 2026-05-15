@@ -2,20 +2,27 @@
 
 namespace App\Policies;
 
-use App\Models\Subject;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class SubjectPolicy
+class TeacherPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view subject');
+        return $user->hasRole('admin');
     }
 
+    /**
+     * Determine whether the user can view the model.
+     */
+    public function view(User $user, Teacher $teacher): bool
+    {
+        return $user->hasRole('admin');
+    }
 
     /**
      * Determine whether the user can create models.
@@ -28,7 +35,7 @@ class SubjectPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Subject $subject): bool
+    public function update(User $user, Teacher $teacher): bool
     {
         return $user->hasRole('admin');
     }
@@ -36,9 +43,10 @@ class SubjectPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Subject $subject): bool
+    public function delete(User $user, Teacher $teacher): bool
     {
         return $user->hasRole('admin');
     }
+
 
 }

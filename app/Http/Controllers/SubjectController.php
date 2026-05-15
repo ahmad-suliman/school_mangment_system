@@ -4,24 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubjectRequest;
 use App\Models\Subject;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $this->authorize('viewAny',Subject::class);
+
+        //if user student he see just his subject
         if (auth()->user()->hasRole('student')) {
-
             $student = auth()->user()->student;
-
             $subjects = Subject::whereHas('classSubjectTeachers', function ($q) use ($student) {
             $q->where('class_id', $student->class_id);
         })->paginate(10);
 
         } else {
+            //else user admin can see all subjects
             $subjects = Subject::paginate(10);
         }
 
@@ -33,6 +37,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',Subject::class);
         return view('Admin.Subject.create');
     }
 
@@ -41,6 +46,7 @@ class SubjectController extends Controller
      */
     public function store(StoreSubjectRequest $request)
     {
+        $this->authorize('create',Subject::class);
         $data = $request->validated();
         Subject::create([
             'subject_name' => $data['subject_name'],
@@ -56,6 +62,7 @@ class SubjectController extends Controller
     public function edit(string $id)
     {
         $subject = Subject::findorfail($id);
+        $this->authorize('update',$subject);
         return view('Admin.Subject.edit', compact('subject'));
     }
 
@@ -64,6 +71,7 @@ class SubjectController extends Controller
      */
     public function update(StoreSubjectRequest $request, Subject $subject)
     {
+        $this->authorize('update',$subject);
         $data = $request->validated();
         $subject->update([
             'subject_name' => $data['subject_name'],
@@ -78,7 +86,9 @@ class SubjectController extends Controller
      */
     public function destroy(string $id)
     {
-        $subject = Subject::findorfail($id)->delete();
+        $subject = Subject::findorfail($id);
+        $this->authorize('delete',$subject);
+        $subject->delete();
         return back()->with('danger', 'Subject Deletet!');
     }
 }

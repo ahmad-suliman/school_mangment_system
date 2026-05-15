@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Mail\WelcomeMail;
 use App\Models\Class_subject_teacher;
 use App\Models\Classes;
 use App\Models\Student;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use PhpParser\Builder\Class_;
 
 class StudentController extends Controller
@@ -63,6 +65,7 @@ class StudentController extends Controller
             'profile_photo' => $photoPath,
         ]);
         $user->assignRole('student');
+        Mail::to($user->email)->send(new WelcomeMail($user));
         Student::create([
             'user_id' => $user->id,
             'student_id' => $data['student_id'],
@@ -73,6 +76,7 @@ class StudentController extends Controller
             'guardian_name' => $data['guardian_name'],
             'guardian_phone' => $data['guardian_phone'],
         ]);
+
         return redirect()->route('students.index')->with('success', 'Student Added Successfuly');
     }
 

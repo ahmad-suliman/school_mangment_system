@@ -45,6 +45,16 @@ class PermissionSeeder extends Seeder
             'create student',
             'update student',
             'delete student',
+            //subject permission
+            'view subject',
+            'create subject',
+            'update subject',
+            'delete subject',
+            //teacher permission
+            'view teacher',
+            'create teacher',
+            'update teacher',
+            'delete teacher',
         ];
 
         foreach ($permissions as $permission) {
@@ -104,6 +114,7 @@ class PermissionSeeder extends Seeder
         $student->syncPermissions([
             'view attendance',
             'view grade',
+            'view subject',
         ]);
     }
 }

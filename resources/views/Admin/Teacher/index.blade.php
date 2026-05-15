@@ -139,7 +139,7 @@
 
 
                                     <td>
-                                        @if($teacher->user->status == 'active')
+                                        @if($teacher->user->status == 1)
                                             <span class="badge bg-success px-3 py-2">
                                                 <i class="fas fa-circle me-1 small"></i> Active
                                             </span>
