@@ -163,6 +163,7 @@
                     </div>
                 </div>
             @else
+
                 {{-- Empty State --}}
                 <div class="text-center py-5">
                     <div class="mb-3">
@@ -170,10 +171,13 @@
                     </div>
                     <h5 class="fw-bold text-dark">No Subjects Found</h5>
                     <p class="text-muted mb-4">There are no subjects added yet. Start by creating a new subject.</p>
+                     @can('create subject')
                     <a href="{{ route('admin.subjects.create') }}" class="btn btn-primary rounded-3">
                         <i class="fas fa-plus me-2"></i> Add First Subject
                     </a>
+                      @endcan
                 </div>
+
             @endif
 
         </div>

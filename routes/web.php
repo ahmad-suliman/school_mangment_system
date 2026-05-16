@@ -110,3 +110,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
+/*
+|--------------------------------------------------------------------------
+| NOTIFICATION
+|--------------------------------------------------------------------------
+*/
+Route::get('/notifications/read/{id}', function ($id) {
+
+    $notification = auth()->user()
+        ->notifications()
+        ->findOrFail($id);
+
+    $notification->markAsRead();
+
+    return redirect()->back();
+
+})->name('notifications.read');

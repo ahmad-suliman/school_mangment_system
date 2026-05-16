@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
+use App\Mail\WelcomeMail;
 use App\Models\User;
 use App\Models\Teacher;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class TeacherController extends Controller
 {
@@ -45,6 +47,7 @@ class TeacherController extends Controller
             'profile_photo' => $photoPath,
         ]);
         $user->assignRole('teacher');
+        Mail::to($user->email)->send(new WelcomeMail($user));
         Teacher::create([
             'user_id' => $user->id,
             'teacher_id' => $data['teacher_id'],

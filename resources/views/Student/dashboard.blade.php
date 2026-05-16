@@ -28,19 +28,19 @@
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="{{route('student.subjects.index')}}" class="nav-link text-white px-3 py-2 rounded">
+                    <a href="{{ route('student.subjects.index') }}" class="nav-link text-white px-3 py-2 rounded">
                         <i class="fa-solid fa-book me-2"></i> Subjects
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="{{route('student.grades.index')}}" class="nav-link text-white px-3 py-2 rounded">
+                    <a href="{{ route('student.grades.index') }}" class="nav-link text-white px-3 py-2 rounded">
                         <i class="fa-solid fa-chart-line me-2"></i> Grades
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a href="{{route('student.attendance.index')}}" class="nav-link text-white px-3 py-2 rounded">
+                    <a href="{{ route('student.attendance.index') }}" class="nav-link text-white px-3 py-2 rounded">
                         <i class="fa-solid fa-calendar-check me-2"></i> Attendance
                     </a>
                 </li>
@@ -85,6 +85,46 @@
                             style="width:40px;height:40px;"> <i class="fa-solid fa-user text-secondary"></i> </div>
                     @endif
                     <span class="fw-semibold">{{ auth()->user()->name }}</span>
+
+                    <div class="dropdown">
+
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            🔔
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end p-2"
+                            style="width: 300px; max-height: 400px; overflow-y: auto;">
+
+                            @forelse(auth()->user()->notifications as $notification)
+                                <li class="mb-2 border-bottom pb-2">
+
+                                    <a href="{{$notification->data['url'] ?? '#'}}" class="text-decoration-none text-dark">
+
+                                        {{ $notification->data['message'] }}
+                                            <a href="{{route('notifications.read',$notification->id)}}"><i class="fa fa-check"></i></a>
+                                        <br>
+
+                                        <small class="text-muted">
+                                            {{ $notification->created_at->diffForHumans() }}
+                                        </small>
+
+                                    </a>
+
+                                </li>
+
+                            @empty
+
+                                <li>
+                                    <p class="text-center m-0">
+                                        No notifications
+                                    </p>
+                                </li>
+                            @endforelse
+
+                        </ul>
+
+                    </div>
                 </div>
             </div>
 

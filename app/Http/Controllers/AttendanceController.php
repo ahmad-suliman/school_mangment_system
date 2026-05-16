@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Models\Classes;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Notifications\AttendanceAddedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -152,7 +153,7 @@ class AttendanceController extends Controller
         // Save
         foreach ($request->attendance as $student_id => $status) {
 
-            Attendance::create([
+           $attendance =  Attendance::create([
                 'student_id' => $student_id,
                 'class_id'   => $request->class_id,
                 'subject_id' => $request->subject_id,
@@ -160,11 +161,19 @@ class AttendanceController extends Controller
                 'date'       => $request->date,
                 'status'     => $status,
             ]);
+
+            $student = Student::find($student_id);
+
+            if ($student && $student->user) {
+
+                $student->user->notify(
+                    new AttendanceAddedNotification($attendance)
+                );
         }
-
+        }
         return redirect()->route('teacher.attendance.index')->with('success', 'Attendance saved');
-    }
 
+    }
     public function edit($id)
     {
         $attendance = Attendance::with('student.user')->findOrFail($id);

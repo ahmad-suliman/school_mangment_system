@@ -234,10 +234,11 @@
                         <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                         <h5 class="fw-bold">No Attendance Records</h5>
                         <p class="text-muted">Start by taking attendance.</p>
-
-                        <a href="{{ route('attendance.create') }}" class="btn btn-primary">
+                        @can('create attendance')
+                        <a href="{{ route('teacher.attendance.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-1"></i> Take Attendance
                         </a>
+                        @endcan
                     </div>
 
                 @endif

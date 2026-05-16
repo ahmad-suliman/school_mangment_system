@@ -206,15 +206,18 @@
                         {{ $grades->links() }}
                     </div>
                 @else
+
                     {{-- EMPTY STATE --}}
                     <div class="text-center py-5">
                         <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
                         <h5>No Grades Found</h5>
                         <p class="text-muted">Start by adding a new grade.</p>
-
-                        <a href="{{ route('grades.create') }}" class="btn btn-primary">
+                        @can('create grade')
+                        <a href="{{ route('teacher.grades.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-1"></i> Add First Grade
+
                         </a>
+                            @endcan
                     </div>
 
                 @endif

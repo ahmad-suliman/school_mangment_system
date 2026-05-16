@@ -9,6 +9,7 @@ use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Notifications\GradeAddedNotification;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -110,13 +111,14 @@ class GradeController extends Controller
         }
 
         //  Save
-        Grade::create([
+        $grade = Grade::create([
             'student_id' => $request->student_id,
             'subject_id' => $request->subject_id,
             'teacher_id' => $teacher_id,
             'marks'      => $request->marks,
         ]);
-
+        $student = Student::find($request->student_id);
+        $student->user->notify(new GradeAddedNotification($grade));
         // Redirect
         return redirect()->route(
             auth()->user()->hasRole('admin')
