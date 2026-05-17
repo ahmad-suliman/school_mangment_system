@@ -22,7 +22,8 @@ class DashboardController extends Controller
         // Attendance percentage (simple real logic)
         $totalAttendance = Attendance::count();
         $presentCount = Attendance::where('status', 'present')->count();
-
+        $absentCount = Attendance::where('status', 'absent')->count();
+        $lateCount = Attendance::where('status', 'late')->count();
         $attendanceRate = $totalAttendance > 0
             ? round(($presentCount / $totalAttendance) * 100)
             : 0;
@@ -45,7 +46,10 @@ class DashboardController extends Controller
             'totalClasses',
             'attendanceRate',
             'latestStudents',
-            'assignments'
+            'assignments',
+            'presentCount',
+            'absentCount',
+            'lateCount',
         ));
     }
     public function teacherDashboard()

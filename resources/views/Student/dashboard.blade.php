@@ -88,37 +88,85 @@
 
                     <div class="dropdown">
 
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            🔔
+                        <button class="btn position-relative border-0 bg-transparent" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+
+                            <i class="fa fa-bell fs-4 text-dark"></i>
+
+                            @if (auth()->user()->unreadNotifications->count() > 0)
+                                <span
+                                    class="position-absolute top-0 start-10 translate-middle badge rounded-pill bg-danger">
+
+                                    {{ auth()->user()->unreadNotifications->count() }}
+
+                                </span>
+                            @endif
+
                         </button>
 
-                        <ul class="dropdown-menu dropdown-menu-end p-2"
-                            style="width: 300px; max-height: 400px; overflow-y: auto;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-0"
+                            style="width: 350px; max-height: 450px; overflow-y: auto; border-radius: 15px;">
 
+                            {{-- Header --}}
+                            <li class="p-3 border-bottom bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <h6 class="mb-0 fw-bold">
+                                        Notifications
+                                    </h6>
+
+                                    <span class="badge bg-primary">
+                                        {{ auth()->user()->unreadNotifications->count() }} New
+                                    </span>
+
+                                </div>
+                            </li>
+
+                            {{-- Notifications --}}
                             @forelse(auth()->user()->notifications as $notification)
-                                <li class="mb-2 border-bottom pb-2">
+                                <li>
 
-                                    <a href="{{$notification->data['url'] ?? '#'}}" class="text-decoration-none text-dark">
+                                    <div
+                                        class="d-flex justify-content-between align-items-start p-3 border-bottom
+                    {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
 
-                                        {{ $notification->data['message'] }}
-                                            <a href="{{route('notifications.read',$notification->id)}}"><i class="fa fa-check"></i></a>
-                                        <br>
+                                        <a href="{{ $notification->data['url'] ?? '#' }}"
+                                            class="text-decoration-none text-dark flex-grow-1">
 
-                                        <small class="text-muted">
-                                            {{ $notification->created_at->diffForHumans() }}
-                                        </small>
+                                            <div class="fw-semibold mb-1">
+                                                {{ $notification->data['message'] }}
+                                            </div>
 
-                                    </a>
+                                            <small class="text-muted">
+                                                {{ $notification->created_at->diffForHumans() }}
+                                            </small>
+
+                                        </a>
+
+                                        {{-- Mark as read --}}
+                                        @if (is_null($notification->read_at))
+                                            <a href="{{ route('notifications.read', $notification->id) }}"
+                                                class="ms-2 text-success">
+
+                                                <i class="fa fa-check-circle"></i>
+
+                                            </a>
+                                        @endif
+
+                                    </div>
 
                                 </li>
 
                             @empty
 
-                                <li>
-                                    <p class="text-center m-0">
+                                <li class="p-4 text-center text-muted">
+
+                                    <i class="fa fa-bell-slash fs-3 mb-2"></i>
+
+                                    <p class="mb-0">
                                         No notifications
                                     </p>
+
                                 </li>
                             @endforelse
 

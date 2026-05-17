@@ -241,11 +241,250 @@
                             </div>
                         </div>
 
-                    </div>
+                        <div class="row mt-4">
 
-                </div>
-            </div>
+                            <div class="col-12">
 
-        </div>
-    </div>
-@endsection
+                                <div class="card border-0 shadow-lg rounded-4">
+
+                                    {{-- Card Header --}}
+                                    <div class="card-header bg-white border-0 pt-4 px-4">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+
+                                            <div>
+
+                                                <h4 class="fw-bold mb-1">
+                                                    School Statistics
+                                                </h4>
+
+                                                <p class="text-muted mb-0">
+                                                    Overview of students, teachers and classes
+                                                </p>
+
+                                            </div>
+
+                                            <div>
+
+                                                <span class="badge bg-primary px-3 py-2 rounded-pill">
+                                                    Admin Dashboard
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    {{-- Card Body --}}
+                                    <div class="card-body p-4">
+
+                                        <canvas id="adminChart" height="100"></canvas>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row mt-4">
+
+                            <div class="col-lg-6">
+
+                                <div class="card border-0 shadow-lg rounded-4">
+
+                                    {{-- Header --}}
+                                    <div class="card-header bg-white border-0 pt-4 px-4">
+
+                                        <div class="d-flex justify-content-between align-items-center">
+
+                                            <div>
+
+                                                <h4 class="fw-bold mb-1">
+                                                    Attendance Overview
+                                                </h4>
+
+                                                <p class="text-muted mb-0">
+                                                    Present, absent and late statistics
+                                                </p>
+
+                                            </div>
+
+                                            <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                Attendance
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    {{-- Body --}}
+                                    <div class="card-body p-4">
+
+                                        <canvas id="attendanceChart" height="250"></canvas>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {{-- Chart.js --}}
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                        <script>
+                            const ctx = document.getElementById('adminChart');
+                            const attendanceCtx = document.getElementById('attendanceChart');
+                            new Chart(ctx, {
+
+                                type: 'bar',
+
+                                data: {
+
+                                    labels: [
+                                        'Students',
+                                        'Teachers',
+                                        'Classes'
+                                    ],
+
+                                    datasets: [{
+
+                                        label: 'School Data',
+
+                                        data: [
+                                            {{ $totalStudents }},
+                                            {{ $totalTeachers }},
+                                            {{ $totalClasses }}
+                                        ],
+
+                                        backgroundColor: [
+                                            'rgba(13, 110, 253, 0.7)',
+                                            'rgba(25, 135, 84, 0.7)',
+                                            'rgba(255, 193, 7, 0.7)'
+                                        ],
+
+                                        borderColor: [
+                                            '#0d6efd',
+                                            '#198754',
+                                            '#ffc107'
+                                        ],
+
+                                        borderWidth: 2,
+
+                                        borderRadius: 12,
+
+                                        hoverBackgroundColor: [
+                                            '#0d6efd',
+                                            '#198754',
+                                            '#ffc107'
+                                        ]
+                                    }]
+                                },
+
+                                options: {
+
+                                    responsive: true,
+
+                                    plugins: {
+
+                                        legend: {
+                                            display: false
+                                        },
+
+                                        tooltip: {
+                                            backgroundColor: '#212529',
+                                            padding: 12,
+                                            cornerRadius: 10
+                                        }
+                                    },
+
+                                    scales: {
+
+                                        y: {
+                                            beginAtZero: true,
+
+                                            grid: {
+                                                color: 'rgba(200,200,200,0.2)'
+                                            },
+
+                                            ticks: {
+                                                stepSize: 1
+                                            }
+                                        },
+
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            new Chart(attendanceCtx, {
+
+                                type: 'pie',
+
+                                data: {
+
+                                    labels: [
+                                        'Present',
+                                        'Absent',
+                                        'Late'
+                                    ],
+
+                                    datasets: [{
+
+                                        data: [
+                                            {{ $presentCount }},
+                                            {{ $absentCount }},
+                                            {{ $lateCount }}
+                                        ],
+
+                                        backgroundColor: [
+                                            'rgba(25, 135, 84, 0.8)',
+                                            'rgba(220, 53, 69, 0.8)',
+                                            'rgba(255, 193, 7, 0.8)'
+                                        ],
+
+                                        borderColor: [
+                                            '#198754',
+                                            '#dc3545',
+                                            '#ffc107'
+                                        ],
+
+                                        borderWidth: 2,
+
+                                        hoverOffset: 12
+                                    }]
+                                },
+
+                                options: {
+
+                                    responsive: true,
+
+                                    plugins: {
+
+                                        legend: {
+                                            position: 'bottom',
+
+                                            labels: {
+                                                padding: 20,
+                                                font: {
+                                                    size: 14
+                                                }
+                                            }
+                                        },
+
+                                        tooltip: {
+                                            backgroundColor: '#212529',
+                                            padding: 12,
+                                            cornerRadius: 10
+                                        }
+                                    }
+                                }
+                            });
+                        </script>
+    @endsection

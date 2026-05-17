@@ -185,7 +185,7 @@
 
                                         {{-- Status --}}
                                         <td>
-                                            @if ($student->user && $student->user->status == 'active')
+                                            @if ($student->user && $student->user->status == 1)
                                                 <span class="badge bg-success px-3 py-2 rounded-pill">
                                                     <i class="fas fa-circle me-1 small"></i> Active
                                                 </span>
