@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassesController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GradeController;
+use App\Models\Announcement;
 use Illuminate\Support\Facades\Route;
 
 
@@ -39,6 +41,7 @@ Route::middleware(['auth','role:admin'])
 
     // Admin can fully manage attendance
     Route::resource('attendance', AttendanceController::class)->except(['create','store']);
+    Route::resource('announcements',AnnouncementController::class);
 
 });
 
@@ -63,6 +66,7 @@ Route::middleware(['auth','role:teacher'])
 
     // Grades
     Route::resource('grades', GradeController::class)->only(['index','create','store']);
+    Route::resource('announcements',AnnouncementController::class)->only(['index','create','store']);
 
 });
 

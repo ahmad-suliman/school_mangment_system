@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Announcement;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 use App\Models\Attendance;
@@ -11,6 +12,7 @@ use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Policies\AnnouncementPolicy;
 use App\Policies\AttendancePolicy;
 use App\Policies\ClassroomPolicy;
 use App\Policies\ClassSubjectTeacherPolicy;
@@ -43,5 +45,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Student::class,StudentPolicy::class);
         Gate::policy(Subject::class,SubjectPolicy::class);
         Gate::policy(Teacher::class,TeacherPolicy::class);
+        Gate::policy(Announcement::class,AnnouncementPolicy::class);
     }
 }

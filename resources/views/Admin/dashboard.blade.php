@@ -52,6 +52,11 @@
                         <li><a href="{{ route('admin.grades.index') }}" class="nav-link text-white">
                                 <i class="fa fa-chart-column me-2"></i> Grades
                             </a></li>
+                        <li>
+                            <a href="{{ route('admin.announcements.index') }}" class="nav-link text-white">
+                                <i class="fas fa-bullhorn me-2"></i> Announcements
+                            </a>
+                        </li>
 
                     </ul>
                 </div>
@@ -487,4 +492,4 @@
                                 }
                             });
                         </script>
-    @endsection
+                    @endsection

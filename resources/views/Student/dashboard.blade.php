@@ -126,9 +126,8 @@
                             @forelse(auth()->user()->notifications as $notification)
                                 <li>
 
-                                    <div
-                                        class="d-flex justify-content-between align-items-start p-3 border-bottom
-                    {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
+                                    <div class="d-flex justify-content-between align-items-start p-3 border-bottom
+                                            {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
 
                                         <a href="{{ $notification->data['url'] ?? '#' }}"
                                             class="text-decoration-none text-dark flex-grow-1">

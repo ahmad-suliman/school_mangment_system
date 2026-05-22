@@ -55,6 +55,11 @@ class PermissionSeeder extends Seeder
             'create teacher',
             'update teacher',
             'delete teacher',
+            //announcement permission
+            'view announcement',
+            'create announcement',
+            'update announcement',
+            'delete announcement',
         ];
 
         foreach ($permissions as $permission) {
@@ -103,6 +108,8 @@ class PermissionSeeder extends Seeder
             'view grade',
             'create grade',
             'view student',
+            'view announcement',
+            'create announcement'
         ]);
 
         /*
