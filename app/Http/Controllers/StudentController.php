@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateStudentRequest;
 use App\Mail\WelcomeMail;
 use App\Models\Class_subject_teacher;
 use App\Models\Classes;
+use App\Models\Grade;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -21,16 +22,40 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny',Student::class);
+        $search = $request->search;
         $user = auth()->user();
         if($user->hasRole('admin')){
-            $students = Student::with(['user', 'classroom'])->paginate(10);
+            $students = Student::with(['user', 'classroom'])
+            ->when($search,function ($query) use ($search){
+                $query->where('address','like',"%$search%")
+                ->orWhereHas('user',function ($q) use ($search){
+                    $q->where('name','like',"%$search%");
+                })
+                ->orWhereHas('classroom',function ($q) use ($search){
+                     $q->where('class_name','like',"%$search%");
+                });
+            })
+            ->latest()
+            ->paginate(10);
         }elseif($user->hasRole('teacher')){
           $teacher = $user->teacher;
           $classId = Class_subject_teacher::where('teacher_id',$teacher->id)->pluck('class_id')->unique();
-          $students = Student::with(['user','classroom'])->whereIn('class_id',$classId)->paginate(10);
+          $students = Student::with(['user','classroom'])
+          ->when($search,function ($query) use ($search){
+                $query->where('address','like',"%$search%")
+                ->orWhereHas('user',function ($q) use ($search){
+                    $q->where('name','like',"%$search%");
+                })
+                ->orWhereHas('classroom',function ($q) use ($search){
+                     $q->where('class_name','like',"%$search%");
+                });
+          })
+          ->whereIn('class_id',$classId)
+          ->latest()
+          ->paginate(10);
         }
         return view('Student.index', compact('students'));
     }
@@ -87,7 +112,8 @@ class StudentController extends Controller
     {
         $this->authorize('view',$student);
         $student->load('user', 'classroom');
-        return view('Student.show', compact('student'));
+        $grades = Grade::with(['subject'])->where('student_id',$student->id)->get();
+        return view('Student.show', compact('student','grades'));
     }
 
     /**

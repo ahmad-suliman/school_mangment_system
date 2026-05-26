@@ -14,10 +14,19 @@ class ClassesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->search;
         $this->authorize('viewAny',Classes::class);
-        return view('Admin.Classes.index', ['classes' => Classes::all()]);
+        $classes = Classes::query()
+        ->when($search,function ($query) use ($search){
+            $query->where('class_name','like',"%$search%")
+            ->orWhere('section','like',"%$search%");
+        })
+        ->latest()
+        ->paginate(10);
+
+        return view('Admin.Classes.index',compact('classes'));
     }
 
     /**

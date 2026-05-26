@@ -16,19 +16,39 @@ class AnnouncementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Announcement::class);
+
         $user = auth()->user();
-        //if user admin show all annoucement
+
+        $search = $request->search;
+
+        // ADMIN
         if ($user->hasRole('admin')) {
-            $announcements = Announcement::with('user')
+            $announcements = Announcement::query()
+                ->when($search, function ($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('message', 'like', "%{$search}%");
+                })
                 ->latest()
                 ->paginate(10);
         }
-        if ($user->hasRole('teacher')) {
-            $announcements = Announcement::where('target_role', 'teacher')->orWhere('target_role', 'all')->paginate(10);
+
+        // TEACHER
+        elseif ($user->hasRole('teacher')) {
+            $announcements = Announcement::where(function ($query) {
+                $query->where('target_role', 'teacher')
+                    ->orWhere('target_role', 'all');
+            })
+                ->when($search, function ($query) use ($search) {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('message', 'like', "%{$search}%");
+                })
+                ->latest()
+                ->paginate(10);
         }
+
         return view('Admin.Announcement.index', compact('announcements'));
     }
 
@@ -77,25 +97,25 @@ class AnnouncementController extends Controller
     public function edit(string $id)
     {
         $announcement = Announcement::findorfail($id);
-        $this->authorize('update',$announcement);
-        return view('Admin.Announcement.edit',compact('announcement'));
+        $this->authorize('update', $announcement);
+        return view('Admin.Announcement.edit', compact('announcement'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update (StoreAnnouncementRequest $request, string $id)
+    public function update(StoreAnnouncementRequest $request, string $id)
     {
 
         $data = $request->validated();
         $announcement = Announcement::findorfail($id);
-        $this->authorize('update',$announcement);
+        $this->authorize('update', $announcement);
         $announcement->update([
             'title' => $data['title'],
             'message' => $data['message'],
             'target_role' => $data['target_role'],
-              ]);
-             return  redirect()->route('admin.announcements.index')->with('success','Announcement Updaeted');
+        ]);
+        return  redirect()->route('admin.announcements.index')->with('success', 'Announcement Updaeted');
     }
 
     /**
@@ -104,8 +124,8 @@ class AnnouncementController extends Controller
     public function destroy(string $id)
     {
         $announcement = Announcement::findorfail($id);
-        $this->authorize('delete',$announcement);
+        $this->authorize('delete', $announcement);
         $announcement->delete();
-        return redirect()->back()->with('danger','Announcement Deleted');
+        return redirect()->back()->with('danger', 'Announcement Deleted');
     }
 }

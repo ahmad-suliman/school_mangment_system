@@ -17,15 +17,22 @@ class GradeController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny',Grade::class);
+        $search = $request->search;
         if (auth()->user()->hasRole('student')) {
 
             $student = auth()->user()->student;
 
             $grades = Grade::with('subject')
                 ->where('student_id', $student->id)
+                ->when($search,function ($query) use ($search){
+                    $query->where('marks','like',"%$search%")
+                    ->orWhereHas('subject',function ($q) use ($search){
+                        $q->where('subject_code','like',"%$search");
+                    });
+                })
                 ->latest()
                 ->paginate(10);
         } elseif (auth()->user()->hasRole('teacher')) {
@@ -34,11 +41,32 @@ class GradeController extends Controller
 
             $grades = Grade::with('student.user', 'subject')
                 ->where('teacher_id', $teacher->id)
+                ->when($search,function ($query) use ($search){
+                    $query->where('marks','like',"%$search%")
+                    ->orWhereHas('subject',function ($q) use ($search){
+                        $q->where('subject_code','like',"%$search");
+                    })
+                    ->orWhereHas('student.user',function ($q) use ($search){
+                        $q->where('name','like',"%$search");
+                    });
+                })
                 ->latest()
                 ->paginate(10);;
         } else {
             // admin
             $grades = Grade::with('student.user', 'subject', 'teacher.user')
+            ->when($search,function ($query) use ($search){
+                    $query->where('marks','like',"%$search%")
+                    ->orWhereHas('subject',function ($q) use ($search){
+                        $q->where('subject_code','like',"%$search");
+                    })
+                    ->orWhereHas('teacher.user',function ($q) use ($search){
+                        $q->where('name','like',"%$search");
+                    })
+                    ->orWhereHas('student.user',function ($q) use ($search){
+                        $q->where('name','like',"%$search");
+                    });
+                })
                 ->latest()
                 ->paginate(10);
         }

@@ -43,6 +43,7 @@ Route::middleware(['auth','role:admin'])
     Route::resource('attendance', AttendanceController::class)->except(['create','store']);
     Route::resource('announcements',AnnouncementController::class);
 
+
 });
 
 
@@ -130,3 +131,4 @@ Route::get('/notifications/read/{id}', function ($id) {
     return redirect()->back();
 
 })->name('notifications.read');
+

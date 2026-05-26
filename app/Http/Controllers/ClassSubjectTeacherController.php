@@ -16,14 +16,27 @@ class ClassSubjectTeacherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny',Class_subject_teacher::class);
+        $search = $request->search;
         $assignments = Class_subject_teacher::with([
             'classroom',
             'subject',
             'teacher.user',
-        ])->latest()->paginate(10);
+        ])->when($search,function ($query) use ($search){
+            $query->orWhereHas('classroom',function ($q) use ($search){
+                $q->where('class_name','like',"%$search%");
+            })
+            ->orWhereHas('subject',function ($q) use ($search){
+                  $q->where('subject_code','like',"%$search%");
+            })
+            ->orWhereHas('teacher.user',function ($q) use ($search){
+                  $q->where('name','like',"%$search%");
+            });
+        })
+        ->latest()
+        ->paginate(10);
 
         return view('Admin.ClassSubjectTeacher.index', compact('assignments'));
     }

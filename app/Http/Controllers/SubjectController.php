@@ -13,20 +13,29 @@ class SubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->authorize('viewAny',Subject::class);
-
+        $this->authorize('viewAny', Subject::class);
+        $search = $request->search;
         //if user student he see just his subject
         if (auth()->user()->hasRole('student')) {
             $student = auth()->user()->student;
-            $subjects = Subject::whereHas('classSubjectTeachers', function ($q) use ($student) {
-            $q->where('class_id', $student->class_id);
-        })->paginate(10);
-
+            $subjects = Subject::query()
+                ->whereHas('classSubjectTeachers', function ($q) use ($student) {
+                    $q->where('class_id', $student->class_id);
+                })
+                ->when($search, function ($query) use ($search) {
+                    $query->where('subject_name', 'like', "%{$search}%");
+                })
+                ->latest()
+                ->paginate(10);
         } else {
             //else user admin can see all subjects
-            $subjects = Subject::paginate(10);
+            $subjects = Subject::query()
+            ->when($search,function ($query) use ($search){
+                $query->where('subject_name','like',"%$search%");
+            })
+            ->paginate(10);
         }
 
         return view('Admin.Subject.index', compact('subjects'));
@@ -37,7 +46,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        $this->authorize('create',Subject::class);
+        $this->authorize('create', Subject::class);
         return view('Admin.Subject.create');
     }
 
@@ -46,7 +55,7 @@ class SubjectController extends Controller
      */
     public function store(StoreSubjectRequest $request)
     {
-        $this->authorize('create',Subject::class);
+        $this->authorize('create', Subject::class);
         $data = $request->validated();
         Subject::create([
             'subject_name' => $data['subject_name'],
@@ -62,7 +71,7 @@ class SubjectController extends Controller
     public function edit(string $id)
     {
         $subject = Subject::findorfail($id);
-        $this->authorize('update',$subject);
+        $this->authorize('update', $subject);
         return view('Admin.Subject.edit', compact('subject'));
     }
 
@@ -71,7 +80,7 @@ class SubjectController extends Controller
      */
     public function update(StoreSubjectRequest $request, Subject $subject)
     {
-        $this->authorize('update',$subject);
+        $this->authorize('update', $subject);
         $data = $request->validated();
         $subject->update([
             'subject_name' => $data['subject_name'],
@@ -87,7 +96,7 @@ class SubjectController extends Controller
     public function destroy(string $id)
     {
         $subject = Subject::findorfail($id);
-        $this->authorize('delete',$subject);
+        $this->authorize('delete', $subject);
         $subject->delete();
         return back()->with('danger', 'Subject Deletet!');
     }

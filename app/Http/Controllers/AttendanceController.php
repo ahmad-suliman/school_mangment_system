@@ -17,31 +17,51 @@ class AttendanceController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Attendance::class);
 
         $user = auth()->user();
+        $search = $request->search;
 
         if ($user->hasRole('student')) {
-
             $attendances = Attendance::with('subject')
                 ->where('student_id', $user->student->id)
+                ->when($search, function ($query) use ($search) {
+                    $query->where('status', 'like', "%{$search}%")
+                        ->orWhereHas('subject', function ($q) use ($search) {
+                            $q->where('subject_name', 'like', "%{$search}%");
+                        });
+                })
                 ->latest()
                 ->paginate(10);
         } elseif ($user->hasRole('teacher')) {
-
             $attendances = Attendance::with('student.user', 'subject')
                 ->where('teacher_id', $user->teacher->id)
+                ->when($search, function ($query) use ($search) {
+                    $query->where('status', 'like', "%{$search}%")
+                        ->orWhereHas('student.user', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('subject', function ($q) use ($search) {
+                            $q->where('subject_name', 'like', "%{$search}%");
+                        });
+                })
                 ->latest()
                 ->paginate(10);
         } else {
 
-            $attendances = Attendance::with(
+            $attendances = Attendance::with([
                 'student.user',
                 'teacher.user',
                 'subject'
-            )
+            ])
+                ->when($search, function ($query) use ($search) {
+                    $query->where('status', 'like', "%{$search}%")
+                        ->orWhereHas('student.user', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                })
                 ->latest()
                 ->paginate(10);
         }
@@ -50,7 +70,7 @@ class AttendanceController extends Controller
     }
     public function create()
     {
-        $this->authorize('create',Attendance::class);
+        $this->authorize('create', Attendance::class);
         $classes = Classes::all();
         if (auth()->user()->hasRole('admin')) {
             $teachers = Teacher::all();
@@ -110,7 +130,7 @@ class AttendanceController extends Controller
 
     public function store(StoreAttendanceRequest $request)
     {
-        $this->authorize('create',Attendance::class);
+        $this->authorize('create', Attendance::class);
         //  Get teacher_id
         if (auth()->user()->hasRole('teacher')) {
 
@@ -153,7 +173,7 @@ class AttendanceController extends Controller
         // Save
         foreach ($request->attendance as $student_id => $status) {
 
-           $attendance =  Attendance::create([
+            $attendance =  Attendance::create([
                 'student_id' => $student_id,
                 'class_id'   => $request->class_id,
                 'subject_id' => $request->subject_id,
@@ -169,26 +189,25 @@ class AttendanceController extends Controller
                 $student->user->notify(
                     new AttendanceAddedNotification($attendance)
                 );
-        }
+            }
         }
         return redirect()->route('teacher.attendance.index')->with('success', 'Attendance saved');
-
     }
     public function edit($id)
     {
         $attendance = Attendance::with('student.user')->findOrFail($id);
-        $this->authorize('update',$attendance);
+        $this->authorize('update', $attendance);
         return view('Admin.Attendance.edit', compact('attendance'));
     }
 
-    public function update(Request $request,string $id)
+    public function update(Request $request, string $id)
     {
         $request->validate([
             'status' => 'required|in:present,absent,late',
         ]);
 
         $attendance = Attendance::findOrFail($id);
-        $this->authorize('update',$attendance);
+        $this->authorize('update', $attendance);
         $attendance->update([
             'status' => $request->status,
         ]);
@@ -204,10 +223,9 @@ class AttendanceController extends Controller
 
     public function destroy(string $id)
     {
-            $attendance = Attendance::findOrFail($id);
-            $this->authorize('delete',$attendance);
-            $attendance->delete();
-            return back()->with('success', 'Attendance deleted successfully');
-
+        $attendance = Attendance::findOrFail($id);
+        $this->authorize('delete', $attendance);
+        $attendance->delete();
+        return back()->with('success', 'Attendance deleted successfully');
     }
 }

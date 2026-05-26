@@ -14,31 +14,31 @@
                 <p class="text-muted mb-0">Manage and track student grades easily.</p>
             </div>
             @role('admin')
-            <div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                <div>
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
-                <a href="{{ route('admin.grades.create')  }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Add Grade
-                </a>
-            </div>
+                    <a href="{{ route('admin.grades.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Grade
+                    </a>
+                </div>
             @endrole
             @role('teacher')
-            <div>
-                <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
+                <div>
+                    <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
-                <a href="{{ route('teacher.grades.create')  }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i> Add Grade
-                </a>
-            </div>
+                    <a href="{{ route('teacher.grades.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add Grade
+                    </a>
+                </div>
             @endrole
             @role('student')
-            <div>
-                <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
+                <div>
+                    <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-1"></i> Dashboard
                     </a>
-            </div>
+                </div>
             @endrole
         </div>
 
@@ -64,10 +64,17 @@
                     {{-- SEARCH UI --}}
                     <div class="w-100" style="max-width: 300px;">
                         <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 bg-light" placeholder="Search...">
+                            <form action="{{ route('admin.grades.index') }}" method="GET"
+                                class="d-flex gap-2">
+
+                                <input type="search" name="search" class="form-control w-100 bg-light border-0"
+                                    placeholder="Search Grades..." value="{{ request('search') }}">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
+                            </form>
                         </div>
                     </div>
 
@@ -91,7 +98,7 @@
                                     <th>Marks</th>
                                     <th>Status</th>
                                     @role('admin')
-                                    <th class="text-center">Actions</th>
+                                        <th class="text-center">Actions</th>
                                     @endrole
                                 </tr>
                             </thead>
@@ -168,26 +175,26 @@
 
                                         {{-- ACTIONS --}}
                                         @role('admin')
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center gap-2">
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center gap-2">
 
-                                                <a href="{{ route('admin.grades.edit', $grade->id) }}"
-                                                    class="btn btn-sm btn-warning">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
+                                                    <a href="{{ route('admin.grades.edit', $grade->id) }}"
+                                                        class="btn btn-sm btn-warning">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
 
-                                                <form action="{{ route('admin.grades.destroy', $grade->id) }}" method="POST"
-                                                    onsubmit="return confirm('Delete this grade?')">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                    <form action="{{ route('admin.grades.destroy', $grade->id) }}"
+                                                        method="POST" onsubmit="return confirm('Delete this grade?')">
+                                                        @csrf
+                                                        @method('DELETE')
 
-                                                    <button class="btn btn-sm btn-danger">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                        <button class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
 
-                                            </div>
-                                        </td>
+                                                </div>
+                                            </td>
                                         @endrole
                                     </tr>
                                 @endforeach
@@ -195,29 +202,28 @@
 
                         </table>
                     </div>
-                     <div class="card-footer bg-white border-0 py-3 px-4">
-                    <small class="text-muted">
-                        <i class="fas fa-database me-1"></i>
-                        Total Grades: <strong>{{ $grades->count() }}</strong>
-                    </small>
-                </div>
+                    <div class="card-footer bg-white border-0 py-3 px-4">
+                        <small class="text-muted">
+                            <i class="fas fa-database me-1"></i>
+                            Total Grades: <strong>{{ $grades->count() }}</strong>
+                        </small>
+                    </div>
                     {{-- PAGINATION --}}
                     <div class="p-3">
                         {{ $grades->links() }}
                     </div>
                 @else
-
                     {{-- EMPTY STATE --}}
                     <div class="text-center py-5">
                         <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
                         <h5>No Grades Found</h5>
                         <p class="text-muted">Start by adding a new grade.</p>
                         @can('create grade')
-                        <a href="{{ route('teacher.grades.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Add First Grade
+                            <a href="{{ route('teacher.grades.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Add First Grade
 
-                        </a>
-                            @endcan
+                            </a>
+                        @endcan
                     </div>
 
                 @endif

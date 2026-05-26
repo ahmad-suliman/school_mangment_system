@@ -14,31 +14,30 @@
                 <p class="text-muted mb-0">Manage and track student attendance records.</p>
             </div>
             <div>
-            @role('admin')
-            <div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Dashboard
-                    </a>
-            </div>
-            @endrole
-            @role('teacher')
-            <div>
-                <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Dashboard
-                    </a>
-                <a href="{{ route('teacher.attendance.create') }}"
-                    class="btn btn-primary shadow-sm">
-                    <i class="fas fa-plus me-1"></i> Take Attendance
-                </a>
-            </div>
-            @endrole
-            @role('student')
-            <div>
-                <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left me-1"></i> Dashboard
-                    </a>
-            </div>
-            @endrole
+                @role('admin')
+                    <div>
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Dashboard
+                        </a>
+                    </div>
+                @endrole
+                @role('teacher')
+                    <div>
+                        <a href="{{ route('teacher.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Dashboard
+                        </a>
+                        <a href="{{ route('teacher.attendance.create') }}" class="btn btn-primary shadow-sm">
+                            <i class="fas fa-plus me-1"></i> Take Attendance
+                        </a>
+                    </div>
+                @endrole
+                @role('student')
+                    <div>
+                        <a href="{{ route('student.dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Dashboard
+                        </a>
+                    </div>
+                @endrole
             </div>
 
         </div>
@@ -67,10 +66,21 @@
                     {{-- SEARCH --}}
                     <div style="max-width: 300px;" class="w-100">
                         <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 bg-light" placeholder="Search student...">
+                            @php
+                                $user = auth()->user();
+                            @endphp
+                            <form
+                                action="{{ ($user->hasRole('admin') ? route('admin.attendance.index') :route('teacher.attendance.index') )? $user->hasRole('student'): route('student.attendance.index') }}"
+                                method="GET" class="d-flex gap-2">
+
+                                <input type="search" name="search" class="form-control w-100 bg-light border-0"
+                                    placeholder="Search attendance..." value="{{ request('search') }}">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
+                            </form>
                         </div>
                     </div>
 
@@ -95,7 +105,7 @@
                                     <th>Date</th>
                                     <th>Status</th>
                                     @role('admin')
-                                    <th class="text-center">Actions</th>
+                                        <th class="text-center">Actions</th>
                                     @endrole
                                 </tr>
                             </thead>
@@ -195,8 +205,8 @@
                                                         <i class="fas fa-pen"></i>
                                                     </a>
 
-                                                    <form action="{{ route('admin.attendance.destroy', $item->id) }}" method="POST"
-                                                        onsubmit="return confirm('Delete this record?')">
+                                                    <form action="{{ route('admin.attendance.destroy', $item->id) }}"
+                                                        method="POST" onsubmit="return confirm('Delete this record?')">
                                                         @csrf
                                                         @method('DELETE')
 
@@ -218,12 +228,12 @@
 
                         </table>
                     </div>
-                     <div class="card-footer bg-white border-0 py-3 px-4">
-                    <small class="text-muted">
-                        <i class="fas fa-database me-1"></i>
-                        Total Attendance : <strong>{{ $attendances->count() }}</strong>
-                    </small>
-                </div>
+                    <div class="card-footer bg-white border-0 py-3 px-4">
+                        <small class="text-muted">
+                            <i class="fas fa-database me-1"></i>
+                            Total Attendance : <strong>{{ $attendances->count() }}</strong>
+                        </small>
+                    </div>
                     {{-- PAGINATION --}}
                     <div class="card-footer bg-white border-0 py-3 text-center">
                         {{ $attendances->links() }}
@@ -235,9 +245,9 @@
                         <h5 class="fw-bold">No Attendance Records</h5>
                         <p class="text-muted">Start by taking attendance.</p>
                         @can('create attendance')
-                        <a href="{{ route('teacher.attendance.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-1"></i> Take Attendance
-                        </a>
+                            <a href="{{ route('teacher.attendance.create') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i> Take Attendance
+                            </a>
                         @endcan
                     </div>
 

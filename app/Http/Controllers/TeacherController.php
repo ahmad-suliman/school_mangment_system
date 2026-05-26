@@ -16,10 +16,19 @@ class TeacherController extends Controller
 {
     use AuthorizesRequests;
     //show all teacher
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny',Teacher::class);
-        $teachers = Teacher::with('user')->latest()->paginate(10);
+        $search = $request->search;
+        $teachers = Teacher::with('user')
+        ->when($search , function ($query) use ($search){
+            $query->where('specialization','like',"%$search%")
+            ->orWhereHas('user',function ($q) use ($search){
+                $q->where('name','like',"%$search%");
+            });
+        })
+        ->latest()
+        ->paginate(10);
         return view('Admin.Teacher.index', compact('teachers'));
     }
     // create page teacher

@@ -52,10 +52,18 @@
 
                     <div class="w-100" style="max-width: 320px;">
                         <div class="input-group">
-                            <span class="input-group-text bg-light border-0">
-                                <i class="fas fa-search text-muted"></i>
-                            </span>
-                            <input type="text" class="form-control border-0 bg-light" placeholder="Search Class...">
+                            <form
+                                action="{{ route('admin.classes.index')}}"
+                                method="GET" class="d-flex gap-2">
+
+                                <input type="search" name="search" class="form-control w-100 bg-light border-0"
+                                    placeholder="Search attendance..." value="{{ request('search') }}">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
+                            </form>
                         </div>
                     </div>
                 </div>
