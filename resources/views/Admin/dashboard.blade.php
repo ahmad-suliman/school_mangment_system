@@ -233,7 +233,7 @@
                                         <tbody>
                                             @foreach ($assignments as $item)
                                                 <tr>
-                                                    <td>{{ $item->classroom->class_name ?? '-' }}</td>
+                                                    <td>{{ $item->classroom->class_name.' - Section '.$item->classroom->section  ?? '-' }}</td>
                                                     <td>{{ $item->subject->subject_name ?? '-' }}</td>
                                                     <td>{{ $item->teacher->user->name ?? '-' }}</td>
                                                 </tr>

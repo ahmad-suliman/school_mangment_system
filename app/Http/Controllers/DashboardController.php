@@ -21,8 +21,8 @@ class DashboardController extends Controller
 
         // Attendance percentage (simple real logic)
         $totalAttendance = Attendance::count();
-        $presentCount = Attendance::where('status', 'present')->count();
-        $absentCount = Attendance::where('status', 'absent')->count();
+        $presentCount = Attendance::where('status', 'present')->whereDate('date',today())->count();
+        $absentCount = Attendance::where('status', 'absent')->whereDate('date',today())->count();
         $lateCount = Attendance::where('status', 'late')->count();
         $attendanceRate = $totalAttendance > 0
             ? round(($presentCount / $totalAttendance) * 100)
@@ -88,7 +88,7 @@ class DashboardController extends Controller
         $subjectsCount = $subjects->count();
 
         // Attendance (optimized)
-        $attendanceQuery = Attendance::where('student_id', $student->id);
+        $attendanceQuery = Attendance::where('student_id', $student->id)->whereDate('date',today());
 
         $totalAttendance = $attendanceQuery->count();
 

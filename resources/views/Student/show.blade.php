@@ -106,23 +106,6 @@
                             </div>
                         </div>
 
-                        {{-- Action Buttons --}}
-                        <div class="d-grid gap-2 mt-4">
-                            <a href="{{ route('students.edit', $student) }}" class="btn btn-primary rounded-3">
-                                <i class="fas fa-pen-to-square me-1"></i> Edit Student
-                            </a>
-
-                            <form action="{{ route('students.destroy', $student) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this student?')">
-                                @csrf
-                                @method('DELETE')
-
-                                <button type="submit" class="btn btn-outline-danger rounded-3 w-100">
-                                    <i class="fas fa-trash me-1"></i> Delete Student
-                                </button>
-                            </form>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -164,7 +147,7 @@
                                     <i class="fas fa-toggle-on me-1 text-success"></i> Status
                                 </label>
                                 <div class="form-control bg-light rounded-3">
-                                    {{ ucfirst($student->user->status ?? 'N/A') }}
+                                    {{ ucfirst($student->user->status == 1 ? 'Active' : 'InActive') }}
                                 </div>
                             </div>
 
@@ -348,7 +331,6 @@
 
                                     <p class="text-muted">Create your first grades for students .</p>
                         @endif
-
                     </div>
 
 

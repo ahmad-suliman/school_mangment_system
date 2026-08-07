@@ -59,7 +59,9 @@
                         <select name="target_role" class="form-select bg-light border-0">
                             <option value="all">All</option>
                             <option value="student">Students</option>
+                            @role('admin')
                             <option value="teacher">Teachers</option>
+                            @endrole
                         </select>
                     </div>
 

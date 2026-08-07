@@ -245,7 +245,6 @@
                             <i class="fas fa-database me-1"></i>
                             Total Students: <strong>{{ $students->total() }}</strong>
                         </small>
-
                         <div>
                             {{ $students->links() }}
                         </div>
@@ -269,5 +268,10 @@
 
             </div>
         </div>
+       <div class="m-3 d-flex justify-content-end">
+          <a href="{{ route('reports.students.pdf') }}" class="btn btn-danger">
+             <i class="far fa-file-pdf"></i> Export Students Report
+            </a>
+         </div>
     </div>
 @endsection

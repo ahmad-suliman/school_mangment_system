@@ -10,6 +10,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GradeController;
+use App\Http\Controllers\ReportPdfController;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Route;
 
@@ -80,8 +81,11 @@ Route::middleware(['auth','role:teacher'])
 Route::middleware(['auth','role:admin|teacher'])->group(function () {
 
     Route::resource('students',StudentController::class);
+    Route::get('/reports/students/pdf', [ReportPdfController::class, 'exportStudentsPdf'])
+    ->name('reports.students.pdf');
 
 });
+
 /*
 |--------------------------------------------------------------------------
 | STUDENT ROUTES

@@ -143,7 +143,8 @@
                                 <label class="form-label fw-semibold text-muted">
                                     <i class="fas fa-toggle-on me-1 text-success"></i> Status
                                 </label>
-                                <div class="form-control bg-light rounded-3">{{ ucfirst($user->status) }}</div>
+                                <div class="form-control bg-light rounded-3">
+                                    {{ ucfirst($user->status == 1 ? 'Active' : 'InActive') }}</div>
                             </div>
 
                             <div class="col-md-6">
@@ -151,13 +152,6 @@
                                     <i class="fas fa-user-tag me-1 text-danger"></i> Role
                                 </label>
                                 <div class="form-control bg-light rounded-3">{{ $role ? ucfirst($role) : 'No Role' }}</div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold text-muted">
-                                    <i class="fas fa-hashtag me-1 text-dark"></i> User ID
-                                </label>
-                                <div class="form-control bg-light rounded-3">#{{ $user->id }}</div>
                             </div>
 
                             <div class="col-md-6">
@@ -245,15 +239,6 @@
                                     <div class="form-control bg-light rounded-3">
                                         {{ $user->teacher->specialization ?? 'N/A' }}</div>
                                 </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-muted">
-                                        <i class="fas fa-graduation-cap me-1 text-info"></i> Qualification
-                                    </label>
-                                    <div class="form-control bg-light rounded-3">
-                                        {{ $user->teacher->qualification ?? 'N/A' }}</div>
-                                </div>
-
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-muted">
                                         <i class="fas fa-calendar-alt me-1 text-info"></i> Hire Date
