@@ -83,6 +83,8 @@ Route::middleware(['auth','role:admin|teacher'])->group(function () {
     Route::resource('students',StudentController::class);
     Route::get('/reports/students/pdf', [ReportPdfController::class, 'exportStudentsPdf'])
     ->name('reports.students.pdf');
+    Route::get('/report/student/pdf/{student}', [ReportPdfController::class, 'exportStudentPdf'])
+    ->name('report.student.pdf');
 
 });
 

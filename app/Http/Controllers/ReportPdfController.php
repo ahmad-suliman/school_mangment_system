@@ -18,4 +18,16 @@ class ReportPdfController extends Controller
         //return $pdf->stream('students-report.pdf');
 
     }
+    public function exportStudentPdf(Student $student){
+        $student->load(['user', 'classroom', 'grades', 'attendances']);
+            $pdf = Pdf::loadView('pdf.student-report', [
+            'student'    => $student,
+            'reportDate' => now()->format('Y-m-d'),
+        ]);
+
+        $pdf->setPaper('a4', 'portrait');
+
+        return $pdf->download('student-' . $student->student_id . '-report.pdf');
+
+    }
 }

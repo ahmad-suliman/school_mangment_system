@@ -337,7 +337,11 @@
                 </div>
             </div>
         </div>
-
+         <div class="mr-3 d-flex justify-content-end">
+          <a href="{{ route('report.student.pdf',$student->id) }}" class="btn btn-sm btn-danger">
+             <i class="far fa-file-pdf"></i> Export {{$student->user->name}} Report
+            </a>
+         </div>
     </div>
     </div>
     </div>
