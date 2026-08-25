@@ -217,6 +217,7 @@
                                                     </a>
                                                 @endcan
                                                 @can('delete student')
+
                                                     <form action="{{ route('students.destroy', $student->id) }}"
                                                         method="POST"
                                                         onsubmit="return confirm('Are you sure you want to delete this student?');"

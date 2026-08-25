@@ -27,9 +27,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+          //to update user status from Inactive 0 to Active 1
          auth()->user()->update([
         'status' => 1
         ]);
+
         if(auth()->user()->hasRole('admin')){
             return redirect()->route('admin.dashboard');
         }
@@ -48,11 +50,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        //to update user status from Active 1 to Inactive 0
         if (auth()->check()) {
             auth()->user()->update([
                 'status' => 0
             ]);
         }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

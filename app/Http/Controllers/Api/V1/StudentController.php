@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Http\Resources\StudentResource;
 use App\Mail\WelcomeMail;
 use App\Models\Class_subject_teacher;
-use App\Models\Classes;
 use App\Models\Grade;
 use App\Models\Student;
 use App\Models\User;
@@ -14,8 +15,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use PhpParser\Builder\Class_;
-
 
 class StudentController extends Controller
 {
@@ -25,7 +24,7 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Student::class);
+            $this->authorize('viewAny', Student::class);
         $search = $request->search;
         $user = auth()->user();
         if ($user->hasRole('admin')) {
@@ -58,18 +57,7 @@ class StudentController extends Controller
                 ->latest()
                 ->paginate(10);
         }
-        return view('Student.index', compact('students'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $this->authorize('create', Student::class);
-        $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
-        $student_id = Student::count();
-        return view('Student.create', compact('classroom', 'student_id'));
+        return StudentResource::collection($students);
     }
 
     /**
@@ -77,62 +65,60 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request)
     {
-        //check if the current user have the rights to create the student
         $this->authorize('create', Student::class);
-        //assign the validated data from the StoreStudentRequest to data varibale
+
         $data = $request->validated();
+
         $photoPath = null;
         if ($request->hasFile('profile_photo')) {
             $photoPath = $request->file('profile_photo')->store('students', 'public');
         }
-        //create user
+
         $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'status' => $data['status'],
-            'profile_photo' => $photoPath,
+            'name'           => $data['name'],
+            'email'          => $data['email'],
+            'password'       => Hash::make($data['password']),
+            'status'         => $data['status'],
+            'profile_photo'  => $photoPath,
         ]);
-        //assign role to user that we create above
+
         $user->assignRole('student');
-        //send welcome mail to that user
-        //### NOTE ###: we should use queue to rigister does not stop until send that mail
-        Mail::to($user->email)->send(new WelcomeMail($user));
-        //create student
-        Student::create([
-            'user_id' => $user->id,
-            'student_id' => $data['student_id'],
-            'class_id' => $data['class_id'],
-            'phone' => $data['phone'],
-            'birth_date' => $data['birth_date'],
-            'address' => $data['address'],
-            'guardian_name' => $data['guardian_name'],
+
+        Mail::to($user->email)->queue(new WelcomeMail($user));
+
+        $student = Student::create([
+            'user_id'        => $user->id,
+            'student_id'     => $data['student_id'],
+            'class_id'       => $data['class_id'],
+            'phone'          => $data['phone'],
+            'birth_date'     => $data['birth_date'],
+            'address'        => $data['address'],
+            'guardian_name'  => $data['guardian_name'],
             'guardian_phone' => $data['guardian_phone'],
         ]);
 
-        return redirect()->route('students.index')->with('success', 'Student Added Successfuly');
+        $student->load(['user', 'classroom']);
+
+        return response()->json([
+            'message' => 'Student added successfully',
+            'data'    => new StudentResource($student),
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(\App\Models\Student $student)
+    public function show(Student $student)
     {
         $this->authorize('view', $student);
+
         $student->load('user', 'classroom');
         $grades = Grade::with(['subject'])->where('student_id', $student->id)->get();
-        return view('Student.show', compact('student', 'grades'));
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $classroom = Classes::select('id', 'class_name', 'section')->orderBy('section')->get();
-        $student = Student::with(['user'])->findOrFail($id);
-        $this->authorize('update', $student);
-        return view('Student.edit', compact('student', 'classroom'));
+        return response()->json([
+            'student' => new StudentResource($student),
+            'grades'  => $grades,
+        ]);
     }
 
     /**
@@ -140,22 +126,30 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, string $id)
     {
-        $student = Student::findorfail($id);
+         $student = Student::findOrFail($id);
         $this->authorize('update', $student);
+
         $data = $request->validated();
-        $user_id = $request->user_id;
-        $user = User::findorfail($user_id)->update([
+
+        $student->user()->update([
             'name' => $data['name'],
         ]);
+
         $student->update([
-            'class_id' => $data['class_id'],
-            'phone' => $data['phone'],
-            'birth_date' => $data['birth_date'],
-            'address' => $data['address'],
-            'guardian_name' => $data['guardian_name'],
+            'class_id'       => $data['class_id'],
+            'phone'          => $data['phone'],
+            'birth_date'     => $data['birth_date'],
+            'address'        => $data['address'],
+            'guardian_name'  => $data['guardian_name'],
             'guardian_phone' => $data['guardian_phone'],
         ]);
-        return redirect()->route('students.index')->with('success', 'Student Updated Successfuly');
+
+        $student->load(['user', 'classroom']);
+
+        return response()->json([
+            'message' => 'Student updated successfully',
+            'data'    => new StudentResource($student),
+        ]);
     }
 
     /**
@@ -163,9 +157,13 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Student::findorfail($id);
+        $student = Student::findOrFail($id);
         $this->authorize('delete', $student);
+
         $student->delete();
-        return back()->with('danger', 'Student Delete It!');
+
+        return response()->json([
+            'message' => 'Student deleted successfully',
+        ]);
     }
 }
