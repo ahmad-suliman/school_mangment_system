@@ -163,9 +163,13 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Student::findorfail($id);
+        $student = Student::with('user')->findorfail($id);
         $this->authorize('delete', $student);
+        $user = $student->user();
         $student->delete();
+        if($user){
+            $user->delete();
+        }
         return back()->with('danger', 'Student Delete It!');
     }
 }

@@ -128,7 +128,7 @@ class GradeController extends Controller
             $teacher_id = $request->teacher_id;
         }
 
-        // Prevent duplicate grade (IMPORTANT)
+        // Prevent duplicate grade
         $exists = Grade::where([
             'student_id' => $request->student_id,
             'subject_id' => $request->subject_id,

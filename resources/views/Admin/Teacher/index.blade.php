@@ -171,7 +171,7 @@
                                                 </a>
 
 
-                                                <form action="{{ route('admin.teachers.destroy', $teacher->user_id) }}"
+                                                <form action="{{ route('admin.teachers.destroy', $teacher->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('Are you sure you want to delete this teacher?');"
                                                     class="d-inline">

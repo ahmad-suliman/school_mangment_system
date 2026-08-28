@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Http\Requests\UpdateTeacherRequest;
+use App\Http\Resources\TeacherResource;
 use App\Mail\WelcomeMail;
-use App\Models\User;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,33 +17,31 @@ use Illuminate\Support\Facades\Mail;
 class TeacherController extends Controller
 {
     use AuthorizesRequests;
-    //show all teacher
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
-        $this->authorize('viewAny',Teacher::class);
+        $this->authorize('viewAny', Teacher::class);
         $search = $request->search;
         $teachers = Teacher::with('user')
-        ->when($search , function ($query) use ($search){
-            $query->where('specialization','like',"%$search%")
-            ->orWhereHas('user',function ($q) use ($search){
-                $q->where('name','like',"%$search%");
-            });
-        })
-        ->latest()
-        ->paginate(10);
-        return view('Admin.Teacher.index', compact('teachers'));
-    }
-    // create page teacher
-    public function create()
-    {
-        $this->authorize('create',Teacher::class);
-        return view('Admin.Teacher.create', ['teacher_id' => Teacher::count()]);
+            ->when($search, function ($query) use ($search) {
+                $query->where('specialization', 'like', "%$search%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%");
+                    });
+            })
+            ->latest()
+            ->paginate(10);
+        return TeacherResource::collection($teachers);
     }
 
-    // save teacher in DB
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(StoreTeacherRequest $request)
     {
-        $this->authorize('create',Teacher::class);
+        $this->authorize('create', Teacher::class);
         $data = $request->validated();
         $photoPath = null;
         if ($request->hasFile('profile_photo')) {
@@ -56,8 +56,8 @@ class TeacherController extends Controller
             'profile_photo' => $photoPath,
         ]);
         $user->assignRole('teacher');
-        Mail::to($user->email)->send(new WelcomeMail($user));
-        Teacher::create([
+        Mail::to($user->email)->queue(new WelcomeMail($user));
+        $teacher = Teacher::create([
             'user_id' => $user->id,
             'teacher_id' => $data['teacher_id'],
             'phone' => $data['phone'] ?? null,
@@ -65,46 +65,51 @@ class TeacherController extends Controller
             'hire_date' => $data['hire_date'],
             'address' => $data['address'],
         ]);
-        return redirect()->route('admin.teachers.index')->with('success', 'Teacher added successfully.');
-    }
-
-    //show teacher info
-    public function show(\App\Models\Teacher $teacher)
-    {
-        $this->authorize('view',$teacher);
         $teacher->load('user');
-
-        return view('Admin.Teacher.show', compact('teacher'));
+        return response()->json([
+            'message' => 'teacher created successfully',
+            'data' => new TeacherResource($teacher),
+        ], 201);
     }
-    // edit teacher
-    public function edit(string $id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Teacher $teacher)
     {
-
-        $teacher = Teacher::with('user')->findOrFail($id);
-        $this->authorize('update',$teacher);
-        return view('Admin.Teacher.edit', compact('teacher'));
+        $this->authorize('view', $teacher);
+        $teacher->load('user');
+        return response()->json([
+            'teacher' => new TeacherResource($teacher),
+        ]);
     }
 
-    // update teacher
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(UpdateTeacherRequest $request, string $id)
     {
         $teacher = Teacher::findorfail($id);
-        $this->authorize('update',$teacher);
+        $this->authorize('update', $teacher);
         $data = $request->validated();
-        $user = User::findorfail($request->u_id)->update([
-            'name' => $data['name'],
-
-        ]);
+        $teacher->user()->update([
+                'name' => $data['name'],
+            ]);
         $teacher->update([
             'phone' => $data['phone'],
             'specialization' => $data['specialization'],
             'hire_date' => $data['hire_date'],
             'address' => $data['address'],
         ]);
-        return redirect()->route('admin.teachers.index')->with('success', 'Teacher edited successfully.');
+        $teacher->load(['user']);
+        return response()->json([
+            'message'=>'teacher updated successfully',
+            'data'=>new TeacherResource($teacher),
+        ]);
     }
 
-    //delete teacher
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(string $id)
     {
         $teacher = Teacher::with('user')->findorfail($id);
@@ -114,7 +119,8 @@ class TeacherController extends Controller
         if($user){
             $user->delete();
         }
-        return back();
-
+        return response()->json([
+                'message' => 'Teacher deleted successfully',
+            ]);;
     }
 }

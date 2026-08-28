@@ -24,9 +24,9 @@ class StudentController extends Controller
      */
     public function index(Request $request)
     {
-            $this->authorize('viewAny', Student::class);
+        $this->authorize('viewAny', Student::class);
         $search = $request->search;
-        $user = auth()->user();
+        $user = auth()->user;
         if ($user->hasRole('admin')) {
             $students = Student::with(['user', 'classroom'])
                 ->when($search, function ($query) use ($search) {
@@ -126,7 +126,7 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, string $id)
     {
-         $student = Student::findOrFail($id);
+        $student = Student::findOrFail($id);
         $this->authorize('update', $student);
 
         $data = $request->validated();
@@ -157,13 +157,15 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        $student = Student::findOrFail($id);
+        $student = Student::with('user')->findOrFail($id);
         $this->authorize('delete', $student);
-
+        $user = $student->user;
         $student->delete();
-
+        if ($user) {
+            $user->delete();
+        }
         return response()->json([
-            'message' => 'Student deleted successfully',
-        ]);
+                'message' => 'Student deleted successfully',
+            ]);
     }
 }
