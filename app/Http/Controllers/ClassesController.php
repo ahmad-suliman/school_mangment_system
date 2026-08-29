@@ -66,9 +66,9 @@ class ClassesController extends Controller
      */
     public function update(StoreClassessRequest $request, string $id)
     {
-
-        $classes = Classes::findorfail($id)->update($request->validated());
-        $this->authorize('update',$classes);
+        $classes = Classes::findOrFail($id);
+        $this->authorize('update', $classes);
+        $classes->update($request->validated());
         return redirect()->back()->with('success', 'class edit successfuly');
     }
 

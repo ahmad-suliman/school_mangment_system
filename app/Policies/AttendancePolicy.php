@@ -13,7 +13,7 @@ class AttendancePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view attendance');
+        return $user->hasAnyRole(['admin', 'teacher', 'student']);
     }
 
     /**
@@ -41,7 +41,7 @@ class AttendancePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create attendance');
+       return $user->hasRole('teacher');
     }
 
     /**
@@ -58,7 +58,7 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance): bool
     {
-        return $user->can('delete attendance');
+        return $user->hasRole('admin');
     }
 
 
