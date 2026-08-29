@@ -24,7 +24,6 @@ The system supports three roles — **Admin**, **Teacher**, and **Student** — 
 
 ### Reports & exports
 - 📄 **PDF reports** (single student or full roster) via `barryvdh/laravel-dompdf`
-- 📊 **Excel exports** via `rap2hpoutre/fast-excel`
 
 ### Notifications
 - ✉️ Welcome email on student registration (**queued**, non-blocking)
@@ -49,14 +48,12 @@ The system supports three roles — **Admin**, **Teacher**, and **Student** — 
 | Frontend (admin panel) | Blade / Tailwind CSS / Vite |
 | Database | MySQL |
 | PDF generation | barryvdh/laravel-dompdf |
-| Excel export | rap2hpoutre/fast-excel |
-| Testing | PHPUnit |
 
 ---
 
 ## 📋 Requirements
 
-- PHP 8.1 – 8.4 *(note: some dependencies, e.g. PDF/Excel libraries, may not yet support PHP 8.5)*
+- PHP 8.1 – 8.4
 - Composer
 - Node.js & npm
 - MySQL
@@ -198,16 +195,6 @@ Enforced via a combination of:
 
 ---
 
-## 🧪 Running Tests
-
-```bash
-php artisan test
-```
-
-**TODO:** Once you've added feature tests (auth, roles, CRUD, PDF export), briefly describe coverage here.
-
----
-
 ## 📂 Project Structure
 
 ```
@@ -232,13 +219,6 @@ routes/
 tests/
 ```
 
-
-
-## 🤝 Contributing
-
-Contributions are welcome. Please open an issue first to discuss what you'd like to change, then submit a pull request.
-
----
 
 
 ## 👤 Author
